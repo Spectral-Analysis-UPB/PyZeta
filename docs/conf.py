@@ -16,9 +16,9 @@ copyright = "2021, Philipp Schuette, Tobias Weich"
 author = "Sebastian Albrecht and Philipp Schuette and Tobias Weich"
 
 # The short X.Y version
-version = importlib.metadata.version("pyzeal")
+version = importlib.metadata.version("pyzeta")
 # The full version, including alpha/beta/rc tags
-release = importlib.metadata.version("pyzeal")
+release = importlib.metadata.version("pyzeta")
 
 
 # -- General configuration ---------------------------------------------------
