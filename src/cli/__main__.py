@@ -7,7 +7,7 @@ Authors:\n
 """
 
 
-def mainPyZEAL() -> None:
+def mainPyZeta() -> None:
     """
     Main entry point for the CLI of the PyZeta project.
     """
