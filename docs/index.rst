@@ -1,30 +1,36 @@
-Welcome to PyZEAL's documentation!
+Welcome to PyZeta's documentation!
 ==================================
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Table of Contents:
-   :numbered:
+.. only:: html
 
-   intro
+    .. include:: misc/badges.rst
 
 --------------------------------
 
-.. py:module:: MyIndexTest
+.. _intro:
 
-The Origin of the PyZeta Project
-================================
+------------------
+Welcome to PyZeta!
+------------------
 
-.. image:: ./_static/images/pic1.png
-   :align: center
+.. include:: misc/intro.rst
 
-A list of references relevant to **PyZeta** can be found below.
+-----------------
+How to Contribute
+-----------------
 
-Bibliography
-============
+.. include:: misc/contributing.rst
 
-.. the following directive includes the *global* bibliography (even uncited elements, similar to LaTeX \nocite{})
-.. bibliography::
-   :all:
+--------------------------------
 
-.. index:: index_test
+.. toctree::
+   :maxdepth: 1
+   :caption: Contents of PyZeta's Documentation:
+
+   misc/getting_started
+   user_guide/user_guide
+   theory/theory
+   package_reference/package_reference
+   faq/faq
+   misc/origins
+   misc/release_notes

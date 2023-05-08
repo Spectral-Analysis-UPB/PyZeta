@@ -8,40 +8,33 @@ echo ""
 echo "|-----------------------------------------------------------|"
 echo "|[running black and isort on sources, tests, and benchmarks]|"
 echo "|-----------------------------------------------------------|"
-black src/
-black tests/
-isort src/
-isort tests/
+black pyzeta/
+isort pyzeta/
 echo ""
 
-echo "|--------------------------------------------------|"
-echo "|[running flake8 on sources, tests, and benchmarks]|"
-echo "|--------------------------------------------------|"
-flake8 src/ \
-    && flake8 tests/ \
-    && echo "no linting errors with flake8!"
-echo ""
-
-echo "|-------------------------------------|"
-echo "|[running pylint on tests and sources]|"
-echo "|-------------------------------------|"
-pylint src/ tests/
+echo "|---------------------------------------------------|"
+echo "|[running linters on sources, tests, and benchmarks]|"
+echo "|---------------------------------------------------|"
+pylama pyzeta/ && echo "no linting errors with pylama!"
+pylint pyzeta/
 echo ""
 
 echo "|------------------------------------------------|"
 echo "|[running mypy on sources, tests, and benchmarks]|"
 echo "|------------------------------------------------|"
-export MYPYPATH=src \
-    && mypy src/ --namespace-packages --explicit-package-bases \
-    && mypy tests/ \
-    && echo "type hints look good!"
+mypy pyzeta/ && echo "type hints look good!"
 echo ""
 
 echo "|--------------------------------------------------------------|"
 echo "|[running docstring coverage on sources, tests, and benchmarks]|"
 echo "|--------------------------------------------------------------|"
-docstr-coverage -p src/
-docstr-coverage -p tests/
+docstr-coverage -b docs/_static/ -p pyzeta/
+echo ""
+
+echo "|--------------------------|"
+echo "|[validating json schemata]|"
+echo "|--------------------------|"
+echo "add schema validation here!"
 echo ""
 
 if [[ "$1" == "--tests" ]]
@@ -49,8 +42,28 @@ then
     echo "|---------------------------|"
     echo "|[running tests with pytest]|"
     echo "|---------------------------|"
-    pytest --cov=src/ --cov-report=html tests/
+
+    PARALLEL=""
+    shift
+
+    while [[ "$#" -ge 1 ]]
+    do
+        if [[ "$1" == "--parallel" ]]
+        then
+            PARALLEL="-n auto"
+        fi
+        shift
+    done
+
+    pytest --cov=pyzeta/ --cov-report=html  $PARALLEL pyzeta/tests/
+    pytest --cov=pyzeta/ --cov-report=html --cov-append -m "locator" pyzeta/tests/
     echo ""
 fi
+
+echo "|-------------------------|"
+echo "|[testing CLI entry point]|"
+echo "|-------------------------|"
+pyzeta --version
+echo ""
 
 echo "--> all done!"

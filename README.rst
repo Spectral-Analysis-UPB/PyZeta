@@ -2,37 +2,47 @@
 PyZeta Project
 ==============
 
-.. image:: https://img.shields.io/badge/Language-Python-blue.svg
-   :target: https://www.python.org/
-
-.. image:: http://img.shields.io/badge/benchmarked%20by-asv-blue.svg?style=flat
-   :target: https://github.com/Spectral-Analysis-UPB/PyZeta
-
-.. image:: https://img.shields.io/github/v/release/Spectral-Analysis-UPB/PyZeta
-   :target: https://github.com/Spectral-Analysis-UPB/PyZeta
-
-.. image:: https://readthedocs.org/projects/pyzeta/badge/?version=latest
-   :target: https://pyzeta.readthedocs.io/en/latest/?badge=latest
-
-.. image:: https://github.com/Spectral-Analysis-UPB/PyZeta/workflows/build/badge.svg
-   :target: https://github.com/Spectral-Analysis-UPB/PyZeta/actions
-
-.. image:: https://codecov.io/gh/Spectral-Analysis-UPB/PyZeta/branch/main/graph/badge.svg
-   :target: https://codecov.io/gh/Spectral-Analysis-UPB/PyZeta
-
-.. image:: https://img.shields.io/badge/docs-docstr--cov-success
+.. |badge0| image:: https://github.com/Spectral-Analysis-UPB/PyZeta/blob/main/docs/_static/docstr_coverage_badge.svg
    :target: https://pypi.org/project/docstr-coverage/
 
-.. image:: https://img.shields.io/badge/mypy-checked-blue
-   :target: https://mypy.readthedocs.io/en/stable/
+.. |badge1| image:: https://img.shields.io/badge/Language-Python-blue.svg
+   :target: https://pypi.org/project/PyZeta/
 
-.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+.. |badge2| image:: http://img.shields.io/badge/benchmarked%20by-asv-blue.svg?style=flat
+   :target: https://github.com/Spectral-Analysis-UPB/PyZeta
+
+.. |badge3| image:: https://img.shields.io/github/v/release/Spectral-Analysis-UPB/PyZeta
+   :target: https://github.com/Spectral-Analysis-UPB/PyZeta
+
+.. |badge4| image:: https://readthedocs.org/projects/pyzeta/badge/?version=latest
+   :target: https://pyzeta.readthedocs.io/en/latest/?badge=latest
+
+.. |badge5| image:: https://github.com/Spectral-Analysis-UPB/PyZeta/workflows/build/badge.svg
+   :target: https://github.com/Spectral-Analysis-UPB/PyZeta/actions
+
+.. |badge6| image:: https://codecov.io/gh/Spectral-Analysis-UPB/PyZeta/branch/main/graph/badge.svg
+   :target: https://codecov.io/gh/Spectral-Analysis-UPB/PyZeta
+
+.. |badge7| image:: https://img.shields.io/badge/code%20style-black-000000.svg
    :target: https://github.com/psf/black
 
-.. contents:: Contents
-  :depth: 2
+.. |badge8| image:: https://img.shields.io/badge/mypy-checked-blue
+   :target: https://mypy.readthedocs.io/en/stable/
 
---------------------------------------------------------------------------------
++----------+--------------+----------+----------+------------+
+| Project  | Build Status | Coverage | Checkers | Benchmarks |
++==========+==============+==========+==========+============+
+| |badge1| | |badge5|     | |badge6| | |badge8| | |badge2|   |
++----------+--------------+----------+----------+------------+
+| |badge3| | |badge4|     | |badge0| | |badge7| |            |
++----------+--------------+----------+----------+------------+
+
+-------------------------------------------------------------------------------
+
+.. contents:: Contents
+  :depth: 1
+
+-------------------------------------------------------------------------------
 
 ------------
 Introduction
@@ -61,7 +71,8 @@ Any resonance related contributions of code or feature requests are welcome!
 Project Features
 ----------------
 
-At the moment the following features are available:
+This project is in the middle of a migration to an open source model. The following features are
+already implemented in legacy code and will be ported to this project (soon!):
 
 - several functions and classes for the calculation and visualisation of geometric
   quantities of hyperbolic geometry (module **hypgeo**)
@@ -81,7 +92,7 @@ At the moment the following features are available:
   surfaces (module **wzeta**)
 
 Comprehensive coverage of all modules and an introduction to the mathematics and
-numerical methods can be found on `ReadTheDocs <https://pyzeal.readthedocs.io/en/latest//>`_.
+numerical methods can be found on `ReadTheDocs <https://pyzeta.readthedocs.io/en/latest//>`_.
 We also provide hints to the original maths and physics literature. As part of
 the documentation we provide interactive *Jupyter notebooks* which could e.g. serve
 as the starting point for your own *PyZeta* based research or applications.
@@ -128,9 +139,9 @@ popular numerics packages: *numpy*, *scipy*, *matplotlib*. Furthermore we requir
 Getting Started
 ===============
 
-There are several straight forward ways to get started with PyZeta, depending on
-what you want to do:
+.. warning::
 
+   Under construction!
 
 -----
 Tests
@@ -138,8 +149,14 @@ Tests
 
 The PyZeta project contains a comprehensive test suite for all modules mentioned
 above. While the tests are an integral part of our continuous integration pipeline,
-you can just as well run the tests yourself, e.g. to verify your local installation:
+you can just as well run the tests yourself, e.g. to verify your local installation
+after cloning this repository:
 
 .. code:: bash
 
-   $ pytest test/
+   $ pytest pyzeta/tests/
+
+.. warning::
+
+   Running tests from the command line (without having to clone the repository) is
+   an upcoming feature!

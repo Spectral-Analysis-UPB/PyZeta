@@ -1,0 +1,16 @@
+{
+    "version": 1,
+    "project": "PyZeta",
+    "project_url": "https://github.com/Spectral-Analysis-UPB/PyZeta",
+    "repo": ".",
+    "install_command": ["python3.9 -m pip install .[all]"],
+    "build_command": [],
+    "branches": ["main"],
+    "dvcs": "git",
+    "environment_type": "virtualenv",
+    "pythons": ["3.9"],
+    "env_dir": ".asv/env",
+    "results_dir": ".asv/results",
+    "html_dir": ".asv/html",
+    "benchmark_dir": "pyzeta/tests/benchmarks"
+}
