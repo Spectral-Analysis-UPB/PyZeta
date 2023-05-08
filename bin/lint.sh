@@ -34,7 +34,9 @@ echo ""
 echo "|--------------------------|"
 echo "|[validating json schemata]|"
 echo "|--------------------------|"
-echo "add schema validation here!"
+check-jsonschema -v \
+    --schemafile pyzeta/framework/feature_toggle/toggle_schema.json \
+    pyzeta/tests/feature_toggle/toggles.json
 echo ""
 
 if [[ "$1" == "--tests" ]]
@@ -56,7 +58,6 @@ then
     done
 
     pytest --cov=pyzeta/ --cov-report=html  $PARALLEL pyzeta/tests/
-    pytest --cov=pyzeta/ --cov-report=html --cov-append -m "locator" pyzeta/tests/
     echo ""
 fi
 

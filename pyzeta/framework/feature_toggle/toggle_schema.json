@@ -1,0 +1,29 @@
+{
+    "$schema": "https://json-schema.org/draft-07/schema",
+    "title": "ToggleCollection",
+    "description": "A collection of feature toggles (flags).",
+    "type": "object",
+    "patternProperties": {
+        "^[a-zA-Z0-9_]+$": {
+            "type": "object",
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "boolean"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "timesAccessible": {
+                    "type": "number"
+                }
+            },
+            "additionalProperties": false,
+            "required": ["name", "value", "description"]
+        }
+    },
+    "additionalProperties": false,
+    "minProperties": 1
+}

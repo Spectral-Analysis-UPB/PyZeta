@@ -1,0 +1,19 @@
+{
+    "toggle1": {
+        "name": "first toggle",
+        "value": true,
+        "description": "Long description of the first feature flag.",
+        "timesAccessible": 1
+    },
+    "toggle2": {
+        "name": "second toggle",
+        "value": false,
+        "description": "Long description of the second feature flag."
+    },
+    "toggle3": {
+        "name": "third toggle",
+        "value": true,
+        "description": "Long description of the third feature flag.",
+        "timesAccessible": -1
+    }
+}
