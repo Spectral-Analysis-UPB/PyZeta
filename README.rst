@@ -42,8 +42,6 @@ The PyZeta Project
 .. contents:: Table of Contents
   :depth: 2
 
--------------------------------------------------------------------------------
-
 ------------
 Introduction
 ------------
@@ -66,7 +64,6 @@ it is capable of calculating so-called weighted zeta functions which allow a mor
 of resonance structures via certain generalized densities in phase space called
 *invariant Ruelle distributions*.
 
-
 ----------------
 Project Features
 ----------------
@@ -79,8 +76,6 @@ already implemented in legacy code and will be ported to this project (soon!):
 - class representations of the following Schottky surfaces: *hyperbolic cylinder*,
   *funneled torus*, *n-funnel surface* (module **ifs**)
 - an abstract base class for custom implementations of hyperbolic surfaces (module **ifs**)
-- two different implementations of rootfinding algorithms for holomorphic functions
-  in one variable based on the argument principle (module **rootfinder**)
 - calculation of quantum mechanical resonances for hyperbolic surfaces (module **zeta**)
 - calculation of classical resonances for the geodesic flow on hyperbolic surfaces,
   which for Schottky surfaces coincides with the quantum resonances spectrum by
@@ -96,7 +91,6 @@ numerical methods can be found on `ReadTheDocs <https://pyzeta.readthedocs.io/en
 We also provide hints to the original maths and physics literature. As part of
 the documentation we provide interactive *Jupyter notebooks* which could e.g. serve
 as the starting point for your own *PyZeta* based research or applications.
-
 
 ------------
 Installation
@@ -124,7 +118,6 @@ required for development):
    $ pip install cython
    $ pip install -e .[dev]
 
-
 ------------
 Requirements
 ------------
@@ -134,14 +127,9 @@ popular numerics packages: *numpy*, *scipy*, *matplotlib*. Furthermore we requir
 *cython* and rely heavily on *numba* for performance optimization. Finally we use
 *bokeh* to build and run our browser based visualisation tool *selector.py*.
 
-
-===============
+---------------
 Getting Started
-===============
-
------------
-Basic Usage
------------
+---------------
 
 .. warning::
 
