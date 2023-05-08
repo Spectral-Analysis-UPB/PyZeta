@@ -1,6 +1,6 @@
-==============
-PyZeta Project
-==============
+==================
+The PyZeta Project
+==================
 
 .. |badge0| image:: https://github.com/Spectral-Analysis-UPB/PyZeta/blob/main/docs/_static/docstr_coverage_badge.svg
    :target: https://pypi.org/project/docstr-coverage/
@@ -39,8 +39,8 @@ PyZeta Project
 
 -------------------------------------------------------------------------------
 
-.. contents:: Contents
-  :depth: 1
+.. contents:: Table of Contents
+  :depth: 2
 
 -------------------------------------------------------------------------------
 
@@ -48,23 +48,23 @@ PyZeta Project
 Introduction
 ------------
 
-*PyZeta* is a numerical project written (mostly) in Python. It aims at providing
+Welcome to **PyZeta**!
+
+**PyZeta** is a numerical project written (mostly) in *Python*. It aims at providing
 an easy to use interface for the calculation of Pollicott-Ruelle resonances of the
 geodesic flow on *convex cocompact hyperbolic surfaces*, i.e. *Schottky surfaces*.
-It is planned to provide resonance calculation tools for scattering systems in
-the future.
+It is planned to provide resonance calculation tools for scattering systems in the future.
 
 The implementation of these facilities heavily relies on the connection between
 resonances and zeros of *dynamical zeta functions*. The latter are numerically
 tractible in the settings mentioned above because of the availability of symbolic
 dynamics and a technique known as cycle expansion.
 
-The PyZeta project allows its user to generate resonance plots for illustration in
-papers or talks. Furthermore it is capable of calculating so-called weighted zeta
-functions which allow a more indepth investigation of resonance structures via certain
-generalized densities in phase space called *invariant Ruelle distributions*.
-
-Any resonance related contributions of code or feature requests are welcome!
+The **PyZeta** project offers its users capabilities ranging from the simple generation of resonance
+plots for illustrational purposes in papers or talks to advanced numerical experimentation. Furthermore
+it is capable of calculating so-called weighted zeta functions which allow a more in-depth investigation
+of resonance structures via certain generalized densities in phase space called
+*invariant Ruelle distributions*.
 
 
 ----------------
@@ -139,6 +139,10 @@ popular numerics packages: *numpy*, *scipy*, *matplotlib*. Furthermore we requir
 Getting Started
 ===============
 
+-----------
+Basic Usage
+-----------
+
 .. warning::
 
    Under construction!
@@ -160,3 +164,17 @@ after cloning this repository:
 
    Running tests from the command line (without having to clone the repository) is
    an upcoming feature!
+
+------------
+Contributing
+------------
+
+If you would like to contribute anything from an improvement of the documentation, a new feature request, bug
+report or (parts of) a root finding algorithm, please feel free to do so. Any collaborations are welcome and
+the documentation or the open issues might be a good place to start.
+
+To contribute, either clone or fork the repository and create a development branch `dev/<your_feature>`. Once
+you have completed your work on this branch create a pull request on the `main` branch of this repository. At
+this point your PR requires (at least) one positive review from a core contributor. Once you have received such
+a review, maybe after addressing some comments and suggestions by the reviewer(s), your PR will be merged effectively
+making your work part of the mainline **PyZeta** package.
