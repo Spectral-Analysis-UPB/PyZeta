@@ -4,6 +4,7 @@ The PyZeta Project
 
 .. |badge0| image:: https://github.com/Spectral-Analysis-UPB/PyZeta/blob/main/docs/_static/docstr_coverage_badge.svg
    :target: https://pypi.org/project/docstr-coverage/
+   :alt: docstr-coverage=?
 
 .. |badge1| image:: https://img.shields.io/badge/Language-Python-blue.svg
    :target: https://pypi.org/project/PyZeta/
