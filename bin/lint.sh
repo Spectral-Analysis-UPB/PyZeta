@@ -37,6 +37,9 @@ echo "|--------------------------|"
 check-jsonschema -v \
     --schemafile pyzeta/framework/feature_toggle/toggle_schema.json \
     pyzeta/tests/feature_toggle/toggles.json
+check-jsonschema -v \
+    --schemafile pyzeta/framework/settings/json_settings/settings_schema.json \
+    pyzeta/framework/settings/json_settings/default_settings.json
 echo ""
 
 if [[ "$1" == "--tests" ]]

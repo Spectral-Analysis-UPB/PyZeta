@@ -10,6 +10,16 @@ from os.path import dirname, join
 import pytest
 
 from pyzeta.framework.feature_toggle.toggle_collection import ToggleCollection
+from pyzeta.framework.initialization.initialization_handler import (
+    PyZetaInitializationHandler,
+)
+from pyzeta.framework.ioc.container import Container
+from pyzeta.framework.ioc.container_provider import ContainerProvider
+
+# build a suitable container
+container = Container()
+PyZetaInitializationHandler.initModeIndependentServices(container)
+ContainerProvider.setContainer(container)
 
 
 def testValidToggle() -> None:
@@ -43,9 +53,9 @@ def testValidToggle() -> None:
     assert not toggles.toggle1
 
 
-def testNonExistingToggle() -> None:
+def testUnconfiguredToggle() -> None:
     """
-    Test a invalid collection of feature flags that is invalid due to
+    Test an invalid collection of feature flags that is invalid due to
     unconfigured attributes.
     """
 
@@ -64,6 +74,25 @@ def testNonExistingToggle() -> None:
         assert toggles.thisToggleDoesNotExist
 
 
+def testExcessiveConfiguration() -> None:
+    """
+    Test an invalid collection of feature flags that is invalid due to the
+    existence of a configuration without matching attribute.
+    """
+
+    # pylint: disable=too-few-public-methods
+    class InvalidToggles(ToggleCollection):
+        "A custom collection with two toggles. For demonstration only!"
+        toggle1: bool
+        toggle2: bool
+
+    # check if toggle creation triggers an exception
+    configFile = join(dirname(__file__), "toggles.json")
+    with pytest.raises(ValueError):
+        toggles = InvalidToggles(configFile)
+        assert toggles.toggle1
+
+
 def testEmptyToggle() -> None:
     "Test an empty collection of feature flags."
 
@@ -75,4 +104,36 @@ def testEmptyToggle() -> None:
     configFile = join(dirname(__file__), "toggles.json")
     with pytest.raises(ValueError):
         toggles = EmptyToggles(configFile)
+        assert toggles
+
+
+def testInvalidAttributeType() -> None:
+    "Test a collection of feature flags with an attribute of non-boolean type."
+
+    # pylint: disable=too-few-public-methods
+    class InvalidTypeToggles(ToggleCollection):
+        "An example for an invalid (empty) collection of toggles."
+        toggle1: float
+
+    # check if toggle creation triggers an exception
+    configFile = join(dirname(__file__), "toggles.json")
+    with pytest.raises(ValueError):
+        toggles = InvalidTypeToggles(configFile)
+        assert toggles
+
+
+def testInvalidConfigFile() -> None:
+    "Test instantiation with non-existing configuration file."
+
+    # pylint: disable=too-few-public-methods
+    class ValidToggles(ToggleCollection):
+        "An example for an invalid (empty) collection of toggles."
+        toggle1: bool
+        toggle2: bool
+        toggle3: bool
+
+    # check if toggle creation triggers an exception
+    configFile = join(dirname(__file__), "does_not_exist.json")
+    with pytest.raises(ValueError):
+        toggles = ValidToggles(configFile)
         assert toggles
