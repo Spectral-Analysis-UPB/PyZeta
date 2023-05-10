@@ -29,6 +29,9 @@ class FooInterface(Protocol):
 class Foo(FooInterface):
     "Test class."
 
+    def __init__(self) -> None:
+        "Default constructor."
+
     def method(self) -> None:
         "Interface implementation."
 
