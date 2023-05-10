@@ -7,10 +7,11 @@ Authors:\n
 
 from typing import Protocol
 
+from pyzeta.framework.ioc.container_provider import ContainerProvider
 from pyzeta.framework.pyzeta_logging.log_levels import LogLevel
 from pyzeta.framework.pyzeta_logging.log_manager import LogManager
 from pyzeta.framework.pyzeta_logging.logger_facade import PyZetaLogger
-from pyzeta.framework.settings.json_settings_service import JSONSettingsService
+from pyzeta.framework.settings.settings_service import SettingsService
 
 
 class Loggable(Protocol):
@@ -28,9 +29,10 @@ class Loggable(Protocol):
 
         :returns: the logger of this class
         """
-        # TODO: resolve settings service from container!
         if not hasattr(self, "_logger"):
-            settingsService = JSONSettingsService()
+            settingsService = ContainerProvider.getContainer().tryResolve(
+                SettingsService
+            )
             self._logger = LogManager.initLogger(
                 self.__module__.rsplit(".", maxsplit=1)[-1],
                 settingsService.logLevel,

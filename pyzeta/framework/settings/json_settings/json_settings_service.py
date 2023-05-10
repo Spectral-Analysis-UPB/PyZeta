@@ -13,10 +13,10 @@ from pyzeta.framework.pyzeta_logging.log_levels import LogLevel
 from pyzeta.framework.settings.invalid_setting_exception import (
     InvalidSettingException,
 )
-from pyzeta.framework.settings.json_core_settings import (
+from pyzeta.framework.settings.json_settings.json_core_settings import (
     JSONCoreSettingsService,
 )
-from pyzeta.framework.settings.json_helper import JSONHelper
+from pyzeta.framework.settings.json_settings.json_helper import JSONHelper
 from pyzeta.framework.settings.settings_service import SettingsService
 
 # location where the default settings should be

@@ -16,7 +16,7 @@ from pyzeta.framework.settings.core_settings_service import CoreSettingsService
 from pyzeta.framework.settings.invalid_setting_exception import (
     InvalidSettingException,
 )
-from pyzeta.framework.settings.json_helper import JSONHelper
+from pyzeta.framework.settings.json_settings.json_helper import JSONHelper
 
 # location where the default settings should be
 DEFAULT_SETTINGS: Final[str] = join(dirname(__file__), "default_settings.json")

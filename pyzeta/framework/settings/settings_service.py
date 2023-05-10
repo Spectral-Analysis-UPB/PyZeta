@@ -11,7 +11,6 @@ from typing import Protocol, runtime_checkable
 from pyzeta.framework.settings.core_settings_service import CoreSettingsService
 
 
-# TODO: add schema validation to ci and lint.sh
 @runtime_checkable
 class SettingsService(CoreSettingsService, Protocol):
     """

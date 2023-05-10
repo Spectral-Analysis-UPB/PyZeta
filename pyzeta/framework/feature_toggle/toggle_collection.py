@@ -17,10 +17,10 @@ Authors:\n
 """
 
 from json import load
-from logging import getLogger
 from typing import Dict, Type, TypedDict
 
 from pyzeta.framework.feature_toggle.feature_flag import FeatureFlag
+from pyzeta.framework.pyzeta_logging.loggable import Loggable
 
 
 class LoadedToggleRequired(TypedDict):
@@ -36,7 +36,7 @@ class LoadedToggle(LoadedToggleRequired, total=False):
 
 
 # pylint: disable=too-few-public-methods
-class ToggleCollection:
+class ToggleCollection(Loggable):
     "Subclass this class to implement your own collection of feature flags."
 
     def __init__(self, filename: str) -> None:
@@ -64,6 +64,7 @@ class ToggleCollection:
             self._createAttr(toggle, config)
 
     def __str__(self) -> str:
+        "Custom string representation of a collection of feature flags."
         return f"{self._config}"
 
     def _retrieveAnnotations(self) -> Dict[str, Type[object]]:
@@ -100,5 +101,5 @@ class ToggleCollection:
 
     def _createAttr(self, toggle: str, config: LoadedToggle) -> None:
         "Create a toggle instance attribute from a config."
-        flag = FeatureFlag(**config, logger=getLogger(__name__))
+        flag = FeatureFlag(**config, logger=self.logger)
         setattr(self, toggle, flag)

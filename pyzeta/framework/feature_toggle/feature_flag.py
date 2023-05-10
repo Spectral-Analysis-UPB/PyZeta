@@ -6,7 +6,8 @@ Authors:\n
 - Philipp Schuette\n
 """
 from dataclasses import dataclass
-from logging import Logger
+
+from pyzeta.framework.pyzeta_logging.logger_facade import PyZetaLogger
 
 
 @dataclass
@@ -15,11 +16,15 @@ class FeatureFlag:
     name: str
     value: bool
     description: str
-    logger: Logger
+    logger: PyZetaLogger
     timesAccessible: int = 1
 
     def __bool__(self) -> bool:
-        # TODO: replace this with framework logging!
+        """
+        Custom boolean evaluation that makes the flag delegate boolean behavior
+        to its `value` attribute after checking the current status of
+        `timesAccessible`.
+        """
         self.logger.warning(
             "feature flag %s with value %s accessed!",
             self.name,

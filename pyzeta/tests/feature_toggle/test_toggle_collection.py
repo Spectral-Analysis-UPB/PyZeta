@@ -10,6 +10,16 @@ from os.path import dirname, join
 import pytest
 
 from pyzeta.framework.feature_toggle.toggle_collection import ToggleCollection
+from pyzeta.framework.initialization.initialization_handler import (
+    PyZetaInitializationHandler,
+)
+from pyzeta.framework.ioc.container import Container
+from pyzeta.framework.ioc.container_provider import ContainerProvider
+
+# build a suitable container
+container = Container()
+PyZetaInitializationHandler.initModeIndependentServices(container)
+ContainerProvider.setContainer(container)
 
 
 def testValidToggle() -> None:
