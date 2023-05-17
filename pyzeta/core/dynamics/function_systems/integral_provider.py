@@ -8,6 +8,8 @@ Authors:\n
 
 from abc import ABC, abstractmethod
 
+from pyzeta.core.pyzeta_types.general import tIntegralVec, tWordVec
+
 
 class IntegralProvider(ABC):
     "Abstract base realizing the potentials used in weighted zeta functions."
