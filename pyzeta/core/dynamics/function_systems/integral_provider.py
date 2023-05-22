@@ -1,6 +1,5 @@
 """
-- the interesting potentials for (weighted) zeta functions should know their
-  associated surface and use the exposed methods to calculate stuff
+TODO.
 
 Authors:\n
 - Philipp Schuette\n
@@ -16,4 +15,10 @@ class IntegralProvider(ABC):
 
     @abstractmethod
     def getOrbitIntegrals(self, words: tWordVec) -> tIntegralVec:
-        "TODO."
+        """
+        Calculate an array of 2d grids containing orbit integrals parallel to
+        a given array of symbolic words.
+
+        :param words: array of symbolic words to calculate orbit integrals for
+        :return: array of orbit integrals on a 2d grid
+        """

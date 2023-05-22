@@ -9,13 +9,14 @@ from abc import ABC, abstractmethod
 from typing import Tuple
 
 from pyzeta.core.pyzeta_types.general import tBoolMat, tVec, tWordVec
+from pyzeta.framework.pyzeta_logging.loggable import Loggable
 
 
-class FunctionSystem(ABC):
+class FunctionSystem(ABC, Loggable):
     "Abstract representation of an (iterated) function system."
 
-    @abstractmethod
     @property
+    @abstractmethod
     def adjacencyMatrix(self) -> tBoolMat:
         """
         Return the adjacency matrix of the given function system.
@@ -23,17 +24,14 @@ class FunctionSystem(ABC):
         :return: adjacency matrix
         """
 
-    @abstractmethod
     @property
-    def fundamentalRectangles(
-        self,
-    ) -> Tuple[Tuple[Tuple[float, float], ...], ...]:
+    @abstractmethod
+    def fundamentalIntervals(self) -> Tuple[Tuple[float, float], ...]:
         """
-        Return the real domains of the functions making up the system. Domains
-        are products of intervals which are represented as tuples of pairs of
-        floats.
+        Return the (real) domain of the functions making up the system. Domains
+        are intervals which are represented as pairs of floats.
 
-        :return: rectangles of definition of the function system
+        :return: intervals of definition of the function system
         """
 
     @property
@@ -45,23 +43,10 @@ class FunctionSystem(ABC):
 
         :return: number of functions
         """
-        return len(self.fundamentalRectangles)
-
-    @property
-    def dimension(self) -> int:
-        """
-        Return the dimension of the analytic maps making up the system.
-
-        :return: dimension of the function system
-        """
-        if len(self.fundamentalRectangles) == 0:
-            raise ValueError(
-                "can't determine system dimension with zero intervals!"
-            )
-        return len(self.fundamentalRectangles[0])
+        return len(self.fundamentalIntervals)
 
     @abstractmethod
-    def getStabilities(self, words: tWordVec) -> Tuple[tVec, ...]:
+    def getStabilities(self, words: tWordVec) -> tVec:
         """
         Return the stabilities (i.e. derivatives of function iterates at fixed
         points) associated with an array of symbolic words.
@@ -71,7 +56,7 @@ class FunctionSystem(ABC):
         """
 
     @abstractmethod
-    def getPeriodicPoints(self, words: tWordVec) -> Tuple[tVec, ...]:
+    def getPeriodicPoints(self, words: tWordVec) -> tVec:
         """
         Return the periodic points (i.e. fixed points of function iterates)
         associated with an array of symbolic words.

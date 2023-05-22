@@ -19,7 +19,7 @@ class MoebiusSystem(FunctionSystem):
     which are given by Moebius transformations.
     """
 
-    __slots__ = ("_gens", "_adj", "_fundRect")
+    __slots__ = ("_gens", "_adj", "_fundInter")
 
     def __init__(
         self,
@@ -32,16 +32,9 @@ class MoebiusSystem(FunctionSystem):
         """
         # TODO: conduct some sanity checks that the given data is consistent
         self._gens = generators
-        # TODO: adjust adjacency matrix to the product setting!
         self._adj = adjacencyMatrix
 
-        # construct the rectangles where the system is defined as products of
-        # intervals where the generators are defined
-        fundamentalRectangles = []
-        for interval1 in fundamentalIntervals:
-            for interval2 in fundamentalIntervals:
-                fundamentalRectangles.append((interval1, interval2))
-        self._fundRect = tuple(fundamentalRectangles)
+        self._fundInter = fundamentalIntervals
 
     # docstr-coverage:inherited
     @property
@@ -50,7 +43,5 @@ class MoebiusSystem(FunctionSystem):
 
     # docstr-coverage:inherited
     @property
-    def fundamentalRectangles(
-        self,
-    ) -> Tuple[Tuple[Tuple[float, float], ...], ...]:
-        return self._fundRect
+    def fundamentalIntervals(self) -> Tuple[Tuple[float, float], ...]:
+        return self._fundInter

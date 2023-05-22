@@ -14,7 +14,7 @@ from typing_extensions import TypeAlias
 tVec: TypeAlias = NDArray[complex128]
 
 # type used for 1d arrays of 2x2 matrices of complex numbers (effectively 3d)
-tMatVec: TypeAlias = NDArray[complex128]
+tMatVec: TypeAlias = NDArray[float64]
 
 # type used for 1d arrays of symbolic words (effectively 2d arrays)
 tWordVec: TypeAlias = NDArray[int16]
