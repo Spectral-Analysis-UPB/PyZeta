@@ -1,7 +1,8 @@
 #!/bin/bash
 
-# remove logs in bin/
+# remove caches and logs from bin/
 rm -rf logs/
+rm -rf __pycache__
 
 # change to project root
 cd ..
@@ -12,21 +13,14 @@ rm -rf .pytest_cache
 if [[ -f ".coverage" ]]; then rm .coverage; fi
 rm -rf htmlcov
 
-# remove all __pycache__ directories
-rm -rf pyzeta/__pycache__
-rm -rf pyzeta/*/__pycache__
-rm -rf pyzeta/*/*/__pycache__
-rm -rf pyzeta/tests/__pycache__
-rm -rf pyzeta/tests/*/__pycache__
-rm -rf pyzeta/tests/*/*/__pycache__
+# remove  __pycache__ directories recursively starting with project root
+find . -name __pycache__ -type d -exec rm -rf {} \; 2>/dev/null
 
-# remove all logging directories
-rm -rf logs/
-rm -rf pyzeta/logs
-rm -rf pyzeta/*/logs
-rm -rf pyzeta/*/*/logs
-rm -rf pyzeta/tests/logs
-rm -rf pyzeta/tests/*/logs
+# remove logs directories recursively starting with project root
+find . -name logs -type d -exec rm -rf {} \; 2>/dev/null
+
+# remove .hypothesis directories recursively starting with project root
+find . -name .hypothesis -type d -exec rm -rf {} \; 2>/dev/null
 
 # remove documentation build artifacts
 rm -rf docs/_build/html/
@@ -38,7 +32,3 @@ rm -rf dist/
 rm -rf ./build/
 rm -rf pyzeta/*.egg-info/
 rm -rf *.egg-info/
-rm -rf .hypothesis/
-rm -rf pyzeta/*/.hypothesis/
-rm -rf pyzeta/tests/.hypothesis/
-rm -rf pyzeta/tests/*/.hypothesis/
