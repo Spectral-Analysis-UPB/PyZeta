@@ -9,7 +9,7 @@ import numpy as np
 from numpy import exp
 from numpy.linalg import inv
 
-from pyzeta.core.dynamics.function_systems.helper.schottky_helper import (
+from pyzeta.core.dynamics.function_systems.helpers.schottky_helper import (
     getDisplacementLengths,
 )
 from pyzeta.core.dynamics.function_systems.moebius_system import MoebiusSystem

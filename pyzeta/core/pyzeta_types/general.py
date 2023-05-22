@@ -13,6 +13,9 @@ from typing_extensions import TypeAlias
 # type used for 1d arrays of complex numbers
 tVec: TypeAlias = NDArray[complex128]
 
+# type used for 2d arrays of complex numbers
+tMat: TypeAlias = NDArray[complex128]
+
 # type used for 1d arrays of 2x2 matrices of complex numbers (effectively 3d)
 tMatVec: TypeAlias = NDArray[float64]
 

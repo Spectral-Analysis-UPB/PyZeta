@@ -8,9 +8,7 @@ Authors:\n
 
 import numpy as np
 
-from pyzeta.core.dynamics.function_systems.hyperbolic_cylinder import (
-    HyperbolicCylinder,
-)
+from pyzeta.core.dynamics.function_systems import HyperbolicCylinder
 from pyzeta.framework.initialization.initialization_handler import (
     PyZetaInitializationHandler,
 )
