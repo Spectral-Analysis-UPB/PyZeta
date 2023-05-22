@@ -6,8 +6,12 @@ Authors:\n
 """
 
 import numpy as np
+from numpy import exp
 from numpy.linalg import inv
 
+from pyzeta.core.dynamics.function_systems.helper.schottky_helper import (
+    getDisplacementLengths,
+)
 from pyzeta.core.dynamics.function_systems.moebius_system import MoebiusSystem
 from pyzeta.core.pyzeta_types.general import tBoolMat, tMatVec, tVec, tWordVec
 
@@ -15,7 +19,7 @@ from pyzeta.core.pyzeta_types.general import tBoolMat, tMatVec, tVec, tWordVec
 class SchottkySurface(MoebiusSystem):
     "Class representation of the geodesic flow dynamics on Schottky surfaces."
 
-    def __init__(self, generators: tMatVec, rotateInfty: bool = False) -> None:
+    def __init__(self, generators: tMatVec) -> None:
         r"""
         Generators are assumed to be in :math:`\mathrm{SL}(2, \mathbb{R})`.
 
@@ -25,15 +29,9 @@ class SchottkySurface(MoebiusSystem):
         adjacencyMatrix = self._initSchottkyAdjacency(rank)
         fullSystem = self._getFullSystem(generators)
 
-        # TODO: initialize correct fundamental intervals
-        fundInter = ()
-        # TODO: rotate if necessary
-        if rotateInfty:
-            self.logger.info("rotate infinity in fundamental interval!")
         super().__init__(
             generators=fullSystem,
             adjacencyMatrix=adjacencyMatrix,
-            fundamentalIntervals=fundInter,
         )
 
     def _initSchottkyAdjacency(self, rank: int) -> tBoolMat:
@@ -55,10 +53,10 @@ class SchottkySurface(MoebiusSystem):
         """
         rank = generators.shape[0]
         fullSystem = np.empty((2 * rank, 2, 2), dtype=np.float64)
-        fullSystem[:rank] = generators
+        fullSystem[rank:] = generators
 
         for i in range(rank):
-            fullSystem[rank + i] = inv(generators[i])
+            fullSystem[i] = inv(generators[i])
 
         return fullSystem
 
@@ -66,12 +64,28 @@ class SchottkySurface(MoebiusSystem):
         """
         TODO.
         """
-        raise NotImplementedError()
+        self.logger.debug("iterating generators along %s", str(words))
+        wordNum = words.shape[0]
+        iteratedGenerators = np.empty((wordNum, 2, 2), dtype=np.float64)
+        for i in range(wordNum):
+            temp = np.eye(2, dtype=np.float64)
+            word = words[i]
+            for letter in word:
+                temp = self._gens[letter] @ temp
+            iteratedGenerators[i] = temp
+        self.logger.debug(
+            "iterated generators are %s", str(iteratedGenerators)
+        )
+        return iteratedGenerators
 
     # docstr-coverage: inherited
     def getStabilities(self, words: tWordVec) -> tVec:
-        raise NotImplementedError()
-
-    # docstr-coverage: inherited
-    def getPeriodicPoints(self, words: tWordVec) -> tVec:
-        raise NotImplementedError()
+        self.logger.info(
+            "computing stabilities (exponentials of displacement lengths)"
+        )
+        iteratedGenerators = self._iterateGenerators(words)
+        displacementLens = getDisplacementLengths(iteratedGenerators)
+        self.logger.debug(
+            "calculated displacement lengths %s", str(displacementLens)
+        )
+        return exp(-displacementLens)  # type: ignore
