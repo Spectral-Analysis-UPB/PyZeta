@@ -12,6 +12,9 @@ import numpy as np
 from pyzeta.core.dynamics.function_systems.function_system import (
     FunctionSystem,
 )
+from pyzeta.core.dynamics.symbolic_dynamics.symbolic_dynamics import (
+    SymbolicDynamics,
+)
 from pyzeta.core.pyzeta_types.general import tMat, tVec, tWordVec
 from pyzeta.core.zetas.abstract_zeta import AbstractZeta
 
@@ -23,8 +26,8 @@ class SelbergZeta(AbstractZeta):
         "_system",
         "_symbDyn",
         "_initStatus",
-        "_wordArr",
-        "_stabilityArr",
+        "_wordArrs",
+        "_stabilityArrs",
     )
 
     def __init__(self, functionSystem: FunctionSystem) -> None:
@@ -38,26 +41,35 @@ class SelbergZeta(AbstractZeta):
         # TODO: resolve function system from container!
         self._system = functionSystem
         # TODO: resolve symbolic dynamic from container!
+        self._symbDyn = SymbolicDynamics(self._system.adjacencyMatrix)
 
         self._initStatus: int = 0
-        self._wordArr: List[tWordVec] = []
-        self._stabilityArr: List[tVec] = []
+        self._wordArrs: List[tWordVec] = []
+        self._stabilityArrs: List[tVec] = []
 
     def __str__(self) -> str:
         "Simple string representation of a Selberg zeta function instance."
         return f"SelbergZeta({self._system})"
 
-    def initWords(self, nMax: int) -> None:
+    def _initWordsAndStabilities(self, nMax: int) -> None:
         """
-        TODO.
+        Initialize symbolic words and associated stabilities for the underlying
+        function system up to a requested maximal word length. The initialized
+        data is stored internally for reuse in zeta function evaluations.
+
+        :param nMax: maximal word length for initialization of dynamical data
         """
         if self._initStatus >= nMax:
-            self.logger.warning("re-initializing data in zeta function!")
+            self.logger.warning("trying to re-initialize data in zeta!")
             return
-        self.logger.debug("initializing data within zeta function")
-        self._initStatus = nMax
+        self.logger.debug("initializing data within zeta function!")
 
-        # TODO: calculate stabilities from symbolic and function dynamics!
+        for words, _ in self._symbDyn.wordGenerator(
+            maxWordLength=nMax, cyclRed=True
+        ):
+            self._wordArrs.append(words)
+            self._stabilityArrs.append(self._system.getStabilities(words))
+        self._initStatus = nMax
 
     # docstr-coverage: inherited
     def calcA(self, s: tVec, nMax: int) -> tMat:
@@ -68,10 +80,10 @@ class SelbergZeta(AbstractZeta):
         sSize = s.shape[0]
         aArr = np.empty((sSize, nMax), dtype=np.complex128)
 
-        self.initWords(nMax)
-        s.reshape(-1, 1)
+        self._initWordsAndStabilities(nMax)
+        s = s.reshape(-1, 1)
         for n in range(1, nMax + 1):
-            stabilities = self._stabilityArr[n - 1].reshape(1, -1)
+            stabilities = self._stabilityArrs[n - 1].reshape(1, -1)
             aArr[:, n - 1] = np.sum(
                 np.power(stabilities, s, dtype=complex) / (1 - stabilities),
                 axis=1,

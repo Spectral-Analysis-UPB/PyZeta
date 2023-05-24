@@ -45,7 +45,7 @@ class SchottkySurface(MoebiusSystem):
             ]
             for i in range(2 * rank)
         ]
-        return np.array(adjacency)
+        return np.array(adjacency, dtype=np.bool_)
 
     def _getFullSystem(self, generators: tMatVec) -> tMatVec:
         """
