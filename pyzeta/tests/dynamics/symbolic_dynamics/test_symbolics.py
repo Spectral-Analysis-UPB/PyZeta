@@ -18,51 +18,35 @@ from pyzeta.core.pyzeta_types.general import tBoolMat
 from pyzeta.framework.initialization.initialization_handler import (
     PyZetaInitializationHandler,
 )
+from pyzeta.tests.resources.symbolics import (
+    ADJ_UNIT_TEST_CASES,
+    SymbolicsTestCase,
+)
 
 PyZetaInitializationHandler.initPyZetaServices()
 
 
-def test_SymbolicDynamics1(adjUnit: tBoolMat) -> None:
+@pt.mark.parametrize("testCase", ADJ_UNIT_TEST_CASES)
+def testSymbolicDynamicsUnit(
+    testCase: SymbolicsTestCase, adjUnit: tBoolMat
+) -> None:
     "Test functionality of SymbolicDynamics class on 4x4 unit matrix."
     sdyn = SymbolicDynamics(adjUnit)
 
-    words = np.array([[0, 0, 0, 0], [1, 1, 1, 1], [2, 2, 2, 2], [3, 3, 3, 3]])
-    assert np.all(sdyn.getSymbolicWords(4) == words)
-
-    givenWords = np.array([[0], [1], [2], [3]])
-    assert np.all(sdyn.getSymbolicWords(4, givenWords) == words)
-    # check that givenWords is not overwritten
-    assert np.all(givenWords == np.array([[0], [1], [2], [3]]))
-
+    # test for an invalid size of given words
     with pt.raises(ValueError):
-        sdyn.getSymbolicWords(3, words)
+        sdyn.getSymbolicWords(
+            wordLength=testCase.configuration["wordLength"] - 1,
+            givenWords=testCase.expectedWords,
+        )
 
-    wordsPrime = np.empty(shape=(0, 4))
-    assert np.all(sdyn.getSymbolicWords(4, prime=True) == wordsPrime)
-
-    wordsPeriodic = np.array(
-        [[0, 0, 0, 0], [1, 1, 1, 1], [2, 2, 2, 2], [3, 3, 3, 3]]
-    )
-    assert np.all(sdyn.getSymbolicWords(4, periodic=True) == wordsPeriodic)
-
-    wordsPrimePeriodic = np.empty(shape=(0, 4))
     assert np.all(
-        sdyn.getSymbolicWords(4, prime=True, periodic=True)
-        == wordsPrimePeriodic
+        sdyn.getSymbolicWords(**testCase.configuration)
+        == testCase.expectedWords
     )
 
-    wordsPermFree = np.array(
-        [[0, 0, 0, 0], [1, 1, 1, 1], [2, 2, 2, 2], [3, 3, 3, 3]]
-    )
-    assert np.all(sdyn.getSymbolicWords(4, permFree=True) == wordsPermFree)
 
-    wordsCyclRed = np.array(
-        [[0, 0, 0, 0], [1, 1, 1, 1], [2, 2, 2, 2], [3, 3, 3, 3]]
-    )
-    assert np.all(sdyn.getSymbolicWords(4, cyclRed=True) == wordsCyclRed)
-
-
-def test_SymbolicDynamics2(adjInverseUnit: tBoolMat) -> None:
+def testSymbolicDynamicsInvUnit(adjInverseUnit: tBoolMat) -> None:
     """
     Test functionality of SymbolicDynamics class on 4x4 boolean inverse of the
     unit matrix.
@@ -203,7 +187,7 @@ def test_SymbolicDynamics2(adjInverseUnit: tBoolMat) -> None:
     )
 
 
-def test_SymbolicDynamics3(adjFull: tBoolMat) -> None:
+def testSymbolicDynamicsFull(adjFull: tBoolMat) -> None:
     """
     Test functionality of SymbolicDynamics class on 3x3 completely filled
     matrix.
@@ -315,7 +299,7 @@ def test_SymbolicDynamics3(adjFull: tBoolMat) -> None:
     )
 
 
-def test_SymbolicDynamics4(adjSparse: tBoolMat) -> None:
+def testSymbolicDynamicsSparse(adjSparse: tBoolMat) -> None:
     "Test functionality of SymbolicDynamics class on 5x5 sparse matrix."
     sdyn = SymbolicDynamics(adjSparse)
 
@@ -426,7 +410,7 @@ def test_SymbolicDynamics4(adjSparse: tBoolMat) -> None:
     )
 
 
-def test_SymbolicDynamics5(adjBlock: tBoolMat) -> None:
+def testSymbolicDynamicsBlock(adjBlock: tBoolMat) -> None:
     "Test functionality of SymbolicDynamics class on 3x3 block matrix."
     sdyn = SymbolicDynamics(adjBlock)
 
@@ -516,7 +500,7 @@ def test_SymbolicDynamics5(adjBlock: tBoolMat) -> None:
     )
 
 
-def test_SymbolicDynamics6(adjSchottky: tBoolMat) -> None:
+def testSymbolicDynamicsSchottky(adjSchottky: tBoolMat) -> None:
     "Test functionality of SymbolicDynamics class on 4x4 Schottky matrix."
     sdyn = SymbolicDynamics(adjSchottky)
 
@@ -644,7 +628,7 @@ def test_SymbolicDynamics6(adjSchottky: tBoolMat) -> None:
     assert np.all(sdyn.getSymbolicWords(4, cyclRed=True)[:10] == wordsCyclRed)
 
 
-def test_SymbolicDynamicsWordGen(adjSchottky: tBoolMat) -> None:
+def testSymbolicDynamicsWordGen(adjSchottky: tBoolMat) -> None:
     """
     Test functionality of the Word Generator of the SymbolicDynamics class
     on 4x4 Schottky matrix.
