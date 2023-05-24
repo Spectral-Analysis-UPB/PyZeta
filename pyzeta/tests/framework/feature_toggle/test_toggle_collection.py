@@ -10,6 +10,7 @@ from os.path import dirname, join
 import pytest
 
 from pyzeta.framework.feature_toggle.toggle_collection import ToggleCollection
+from pyzeta.framework.feature_toggle.toggle_exception import ToggleException
 from pyzeta.framework.initialization.initialization_handler import (
     PyZetaInitializationHandler,
 )
@@ -69,7 +70,7 @@ def testUnconfiguredToggle() -> None:
 
     # check if toggle creation triggers an exception
     configFile = join(dirname(__file__), "toggles.json")
-    with pytest.raises(ValueError):
+    with pytest.raises(ToggleException):
         toggles = InvalidToggles(configFile)
         assert toggles.thisToggleDoesNotExist
 
@@ -88,7 +89,7 @@ def testExcessiveConfiguration() -> None:
 
     # check if toggle creation triggers an exception
     configFile = join(dirname(__file__), "toggles.json")
-    with pytest.raises(ValueError):
+    with pytest.raises(ToggleException):
         toggles = InvalidToggles(configFile)
         assert toggles.toggle1
 
@@ -102,7 +103,7 @@ def testEmptyToggle() -> None:
 
     # check if toggle creation triggers an exception
     configFile = join(dirname(__file__), "toggles.json")
-    with pytest.raises(ValueError):
+    with pytest.raises(ToggleException):
         toggles = EmptyToggles(configFile)
         assert toggles
 
@@ -117,7 +118,7 @@ def testInvalidAttributeType() -> None:
 
     # check if toggle creation triggers an exception
     configFile = join(dirname(__file__), "toggles.json")
-    with pytest.raises(ValueError):
+    with pytest.raises(ToggleException):
         toggles = InvalidTypeToggles(configFile)
         assert toggles
 
@@ -134,6 +135,6 @@ def testInvalidConfigFile() -> None:
 
     # check if toggle creation triggers an exception
     configFile = join(dirname(__file__), "does_not_exist.json")
-    with pytest.raises(ValueError):
+    with pytest.raises(ToggleException):
         toggles = ValidToggles(configFile)
         assert toggles

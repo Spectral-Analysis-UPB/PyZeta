@@ -26,6 +26,7 @@ dependencies = [
     "typing-extensions",
     "numba>=0.55.1",
     "bokeh",
+    "pyzeal>=1.0.0"
 ]
 
 [project.optional-dependencies]
