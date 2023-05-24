@@ -25,17 +25,22 @@ class AbstractSymbolicDynamics(ABC, Loggable):
     @abstractmethod
     def wordGenerator(
         self,
-        nMax: int,
+        maxWordLength: int,
         prime: bool = False,
         permFree: bool = False,
         cyclRed: bool = False,
     ) -> Iterator[Tuple[tWordVec, NDArray[tGroupElement]]]:
         """
-        TODO.
+        Return a generator that yields all symbolic words up to a maximal word
+        length and satisfying certain given properties together with associated
+        group elements. Implementations may choose to return an empty array of
+        symmetries effectively reducing the symmetry to the trivial one-element
+        group.
 
-        :param nMax:
-        :param prime:
-        :param permFree:
-        :param cyclRed:
-        :return:
+        :param maxWordLength: maximal word length before the generator expires
+        :param prime: flag indicating if non-prime words are filtered
+        :param permFree: flag indicating if permutations of words are filtered
+        :param cyclRed: flag indicating if non-cyclically reduced words are
+            filtered
+        :return: a generator of parallel arrays of words and symmetries
         """

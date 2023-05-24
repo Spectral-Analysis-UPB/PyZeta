@@ -6,7 +6,7 @@ Authors:\n
 - Philipp Schuette\n
 """
 
-from numpy import bool_, complex128, float64, int16
+from numpy import bool_, complex128, float64, uint8
 from numpy.typing import NDArray
 from typing_extensions import TypeAlias
 
@@ -20,7 +20,7 @@ tMat: TypeAlias = NDArray[complex128]
 tMatVec: TypeAlias = NDArray[float64]
 
 # type used for 1d arrays of symbolic words (effectively 2d arrays)
-tWordVec: TypeAlias = NDArray[int16]
+tWordVec: TypeAlias = NDArray[uint8]
 
 # type used for 1d arrays of orbit integral matrices (effectively 3d arrays)
 tIntegralVec: TypeAlias = NDArray[float64]

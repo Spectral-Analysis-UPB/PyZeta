@@ -1,5 +1,5 @@
 """
-Module `service_configuration_exception.py` from the package `PyZeta`.
+Module `configuration_exception.py` from the package `PyZeta`.
 
 This module contains the generic exception signaling that an invalid
 configuration has been received.

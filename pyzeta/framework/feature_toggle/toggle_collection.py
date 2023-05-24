@@ -20,6 +20,7 @@ from json import load
 from typing import Dict, Type, TypedDict
 
 from pyzeta.framework.feature_toggle.feature_flag import FeatureFlag
+from pyzeta.framework.feature_toggle.toggle_exception import ToggleException
 from pyzeta.framework.pyzeta_logging.loggable import Loggable
 
 
@@ -50,14 +51,13 @@ class ToggleCollection(Loggable):
         self._config = self._loadFromJson(filename)
 
         if undeclaredToggles := set(self._config) - set(annotations):
-            # TODO: replace with custom Exception subclass
-            raise ValueError(
-                f"config file has undeclared toggles ({undeclaredToggles})!"
+            raise ToggleException(
+                f"excess toggles [{undeclaredToggles}] in config file!"
             )
 
         if unconfiguredToggles := set(annotations) - set(self._config):
-            raise ValueError(
-                f"toggles without config found ({unconfiguredToggles})!"
+            raise ToggleException(
+                f"unconfigured toggles [{unconfiguredToggles}] in script!"
             )
 
         for toggle, config in self._config.items():
@@ -70,17 +70,14 @@ class ToggleCollection(Loggable):
     def _retrieveAnnotations(self) -> Dict[str, Type[object]]:
         "Retrieve the annotations of the toggle collection."
         if not (annotations := getattr(self, "__annotations__", None)):
-            raise ValueError(
-                "valid collections of feature flags must contain at least one"
-                " annotated variable!"
+            raise ToggleException(
+                "valid collection must contain >=1 annotated variables!"
             )
 
         result: Dict[str, Type[object]] = {}
         for attr, attrType in annotations.items():
             if attrType != bool:
-                raise ValueError(
-                    f"feature flag {attr} must be bool, not {attrType}!"
-                )
+                raise ToggleException(f"{attr} must be bool, not {attrType}!")
             # further checks on the attributes present could be done here
             result[attr] = attrType
         return result
@@ -91,7 +88,7 @@ class ToggleCollection(Loggable):
             with open(filename, "r", encoding="utf-8") as configFile:
                 config = load(configFile)
         except Exception as ex:
-            raise ValueError(f"invalid toggle config file: {filename}") from ex
+            raise ToggleException(f"config file {filename} invalid!") from ex
 
         result: Dict[str, LoadedToggle] = {}
         for toggleName, toggleConfig in config.items():
