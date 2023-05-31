@@ -9,14 +9,16 @@ Authors:\n
 import numpy as np
 
 from pyzeta.core.dynamics.function_systems import HyperbolicCylinder
+from pyzeta.framework.initialization.init_modes import InitModes
 from pyzeta.framework.initialization.initialization_handler import (
     PyZetaInitializationHandler,
 )
 
-PyZetaInitializationHandler.initPyZetaServices()
+# initialize SettingsService
+PyZetaInitializationHandler.initPyZetaServices(mode=InitModes.TEST)
 
 
-def test_cylinder() -> None:
+def testCylinder() -> None:
     "Test correct calculation of lengths for the hyperbolic cylinder."
     for width in [1.0, 2.0, 5.0, 10.0, 20.0]:
         for maxLetters in [20, 30]:

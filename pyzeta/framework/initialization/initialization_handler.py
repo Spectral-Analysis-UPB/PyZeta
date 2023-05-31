@@ -8,6 +8,14 @@ Authors:\n
 
 from typing import Optional
 
+from pyzeta.core.dynamics.function_systems.function_system import (
+    FunctionSystem,
+)
+from pyzeta.core.dynamics.symbolic_dynamics.abstract_dynamics import (
+    AbstractSymbolicDynamics,
+)
+from pyzeta.core.factories.function_systems import FunctionSystemFactory
+from pyzeta.core.factories.symbolics import SymbolicDynamicsFactory
 from pyzeta.framework.initialization.init_modes import InitModes
 from pyzeta.framework.ioc.container import Container
 from pyzeta.framework.ioc.container_provider import ContainerProvider
@@ -45,7 +53,9 @@ class PyZetaInitializationHandler:
         container = Container()
 
         # register anything mode-independent first (i.e. settings for logging)
-        if mode in (InitModes.CLI | InitModes.SCRIPT | InitModes.GUI):
+        if mode in (
+            InitModes.CLI | InitModes.SCRIPT | InitModes.GUI | InitModes.TEST
+        ):
             PyZetaInitializationHandler.initModeIndependentServices(container)
 
         # at this point a SettingsService must have been registered!
@@ -60,6 +70,8 @@ class PyZetaInitializationHandler:
             PyZetaInitializationHandler.initSCRIPTServices(container)
         elif mode == InitModes.GUI:
             PyZetaInitializationHandler.initGUIServices(container)
+        elif mode == InitModes.TEST:
+            PyZetaInitializationHandler.initTESTServices(container)
 
         # initialization complete!
         ContainerProvider.setContainer(container)
@@ -92,6 +104,28 @@ class PyZetaInitializationHandler:
 
         :param container: container to register scripting services with
         """
+        container.registerAsTransient(
+            AbstractSymbolicDynamics,
+            SymbolicDynamicsFactory.getConcreteSymbolics,
+        )
+        container.registerAsTransient(
+            FunctionSystem, FunctionSystemFactory.getConcreteSystem
+        )
+
+    @staticmethod
+    def initTESTServices(container: Container) -> None:
+        """
+        TODO.
+
+        :param container: container to register testing services with
+        """
+        container.registerAsTransient(
+            AbstractSymbolicDynamics,
+            SymbolicDynamicsFactory.getConcreteSymbolics,
+        )
+        container.registerAsTransient(
+            FunctionSystem, FunctionSystemFactory.getConcreteSystem
+        )
 
     @staticmethod
     def initGUIServices(container: Container) -> None:

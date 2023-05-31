@@ -10,22 +10,25 @@ from pyzeal.pyzeal_types.algorithm_types import AlgorithmTypes
 from pyzeal.pyzeal_types.estimator_types import EstimatorTypes
 from pyzeal.rootfinders.rootfinder import RootFinder
 
-from pyzeta.core.dynamics.function_systems.implementations import (
-    HyperbolicCylinder,
-)
+from pyzeta.core.pyzeta_types.function_systems import FunctionSystemType
+from pyzeta.core.pyzeta_types.system_arguments import HyperbolicCylinderArgs
 from pyzeta.core.zetas.selberg_zeta import SelbergZeta
+from pyzeta.framework.initialization.init_modes import InitModes
 from pyzeta.framework.initialization.initialization_handler import (
     PyZetaInitializationHandler,
 )
 
-PyZetaInitializationHandler.initPyZetaServices()
+# initialize SettingsService
+PyZetaInitializationHandler.initPyZetaServices(mode=InitModes.TEST)
 
 
 def testCylinderResonances() -> None:
     "Test Selberg zeta by calculating resonances on the hyperbolic cylinder."
-    funnelWidth = 5.0
-    cylinder = HyperbolicCylinder(funnelWidth)
-    zeta = SelbergZeta(cylinder)
+    initArgs: HyperbolicCylinderArgs = {"funnelWidth": 5.0}
+    zeta = SelbergZeta(
+        functionSystem=FunctionSystemType.HYPERBOLIC_CYLINDER,
+        systemInitArgs=initArgs,
+    )
 
     nMax = 6
     finder = RootFinder(
@@ -34,8 +37,9 @@ def testCylinderResonances() -> None:
         estimatorType=EstimatorTypes.SUMMATION_ESTIMATOR,
     )
 
+    width = initArgs["funnelWidth"]
     expectedResonances = np.array(
-        [-2 * np.pi * 1j / funnelWidth, 0, 2 * np.pi * 1j / funnelWidth]
+        [-2 * np.pi * 1j / width, 0, 2 * np.pi * 1j / width]
     )
     # check if zeta function becomes small on theoretically expected zeros
     zetaEval = zeta(expectedResonances, nMax=2 * nMax)

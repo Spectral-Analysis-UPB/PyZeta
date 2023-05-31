@@ -15,6 +15,7 @@ from pyzeta.core.dynamics.symbolic_dynamics.symbolic_dynamics import (
     SymbolicDynamics,
 )
 from pyzeta.core.pyzeta_types.general import tBoolMat
+from pyzeta.framework.initialization.init_modes import InitModes
 from pyzeta.framework.initialization.initialization_handler import (
     PyZetaInitializationHandler,
 )
@@ -23,7 +24,8 @@ from pyzeta.tests.resources.symbolics import (
     SymbolicsTestCase,
 )
 
-PyZetaInitializationHandler.initPyZetaServices()
+# initialize SettingsService
+PyZetaInitializationHandler.initPyZetaServices(mode=InitModes.TEST)
 
 
 @pt.mark.parametrize("testCase", ADJ_UNIT_TEST_CASES)

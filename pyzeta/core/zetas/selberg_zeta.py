@@ -12,11 +12,15 @@ import numpy as np
 from pyzeta.core.dynamics.function_systems.function_system import (
     FunctionSystem,
 )
-from pyzeta.core.dynamics.symbolic_dynamics.symbolic_dynamics import (
-    SymbolicDynamics,
+from pyzeta.core.dynamics.symbolic_dynamics.abstract_dynamics import (
+    AbstractSymbolicDynamics,
 )
+from pyzeta.core.pyzeta_types.function_systems import FunctionSystemType
 from pyzeta.core.pyzeta_types.general import tMat, tVec, tWordVec
+from pyzeta.core.pyzeta_types.symbolics import SymbolicDynamicsType
+from pyzeta.core.pyzeta_types.system_arguments import tFunctionSystemInitArgs
 from pyzeta.core.zetas.abstract_zeta import AbstractZeta
+from pyzeta.framework.ioc.container_provider import ContainerProvider
 
 
 class SelbergZeta(AbstractZeta):
@@ -30,7 +34,12 @@ class SelbergZeta(AbstractZeta):
         "_stabilityArrs",
     )
 
-    def __init__(self, functionSystem: FunctionSystem) -> None:
+    def __init__(
+        self,
+        *,
+        functionSystem: FunctionSystemType,
+        systemInitArgs: tFunctionSystemInitArgs,
+    ) -> None:
         """
         TODO.
         """
@@ -38,10 +47,15 @@ class SelbergZeta(AbstractZeta):
             "creating %s for %s", self.__class__.__name__, str(functionSystem)
         )
 
-        # TODO: resolve function system from container!
-        self._system = functionSystem
-        # TODO: resolve symbolic dynamic from container!
-        self._symbDyn = SymbolicDynamics(self._system.adjacencyMatrix)
+        container = ContainerProvider.getContainer()
+        self._system = container.tryResolve(
+            FunctionSystem, systemType=functionSystem, initArgs=systemInitArgs
+        )
+        self._symbDyn = container.tryResolve(
+            AbstractSymbolicDynamics,
+            symbolicsType=SymbolicDynamicsType.NON_REDUCED,
+            adjacencyMatrix=self._system.adjacencyMatrix,
+        )
 
         self._initStatus: int = 0
         self._wordArrs: List[tWordVec] = []
