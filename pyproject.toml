@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "PyZeta"
-version = "0.0.1"
+version = "0.0.2"
 authors = [
     {name = "Philipp Schuette", email = "pschuet2@mail.uni-paderborn.de"}
 ]
