@@ -10,14 +10,19 @@ Authors:\n
 from __future__ import annotations
 
 from inspect import Parameter, signature
-from typing import Callable, Dict, Type, TypeVar
+from typing import Any, Callable, Dict, Type, TypeVar
 
+from typing_extensions import ParamSpec
+
+from pyzeta.framework.aop.aspect import Aspect
 from pyzeta.framework.ioc.configuration_exception import (
     InvalidServiceConfiguration,
 )
 
 # type variable for the various signatures of Container methods
+S = TypeVar("S")
 T = TypeVar("T")
+P = ParamSpec("P")
 
 
 class Container:
@@ -26,12 +31,18 @@ class Container:
     inversion.
     """
 
-    __slots__ = ("_transientServices", "_singletonServices", "_sealed")
+    __slots__ = (
+        "_transientServices",
+        "_singletonServices",
+        "_aspects",
+        "_sealed",
+    )
 
     def __init__(self) -> None:
         "Initialize a new container instance."
         self._transientServices: Dict[Type[object], Callable[..., object]] = {}
         self._singletonServices: Dict[Type[object], object] = {}
+        self._aspects: Dict[Type[object], Aspect[Any, Any, Any]] = {}
         self._sealed: bool = False
 
     def registerAsSingleton(
@@ -94,6 +105,8 @@ class Container:
         # try to resolve as singleton
         instance = self._singletonServices.get(serviceType, None)
         if isinstance(instance, serviceType):
+            if aspect := self._aspects.get(serviceType, None):
+                aspect(type(instance))
             return instance
 
         # try to resolve as transient
@@ -117,6 +130,8 @@ class Container:
                     )
         instance = factory(**arguments)
         if isinstance(instance, serviceType):
+            if aspect := self._aspects.get(serviceType, None):
+                aspect(type(instance))
             return instance
 
         # resolving failed
@@ -150,3 +165,23 @@ class Container:
         self._transientServices.clear()
         self._singletonServices.clear()
         self._sealed = False
+
+    def registerAspect(
+        self, aspect: Aspect[S, T, P], serviceType: Type[S]
+    ) -> Container:
+        """
+        Register an aspect for a given type of service. The aspect intercepts
+        calls to resolve the service type and adorns the concrete return
+        types lazily.
+
+        :param aspect: Aspect to apply to the service
+        :param serviceType: The type of service whose implementations gets
+            aspect gets applied to
+        :return: Return the container instance for method chaining
+        """
+        if self.isSealed():
+            raise ValueError(
+                f"cannot register aspect {aspect} for {serviceType} if sealed!"
+            )
+        self._aspects[serviceType] = aspect
+        return self

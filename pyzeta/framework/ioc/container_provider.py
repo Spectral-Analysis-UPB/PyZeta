@@ -6,9 +6,16 @@ Authors:\n
 - Philipp Schuette\n
 """
 
-from typing import Optional
+from typing import Optional, Type, TypeVar
 
+from typing_extensions import ParamSpec
+
+from pyzeta.framework.aop.aspect import Aspect
 from pyzeta.framework.ioc.container import Container
+
+S = TypeVar("S")
+T = TypeVar("T")
+P = ParamSpec("P")
 
 
 class ContainerProvider:
@@ -27,3 +34,10 @@ class ContainerProvider:
     def setContainer(container: Container) -> None:
         "Register a pre-built container instance."
         ContainerProvider._container = container
+
+    @staticmethod
+    def registerAspectGlobally(
+        aspect: Aspect[S, T, P], serviceType: Type[S]
+    ) -> None:
+        "Register an aspect for a type on the global container instance."
+        ContainerProvider.getContainer().registerAspect(aspect, serviceType)

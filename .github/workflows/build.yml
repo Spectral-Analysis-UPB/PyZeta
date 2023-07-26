@@ -43,4 +43,4 @@ jobs:
         docstr-coverage -m -f -F 85.0 pyzeta
     - name: Test with pytest
       run: |
-        pytest -n auto pyzeta/tests
+        pytest pyzeta/tests
