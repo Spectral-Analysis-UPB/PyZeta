@@ -9,13 +9,11 @@ from typing import Callable, Generic, Optional, TypeVar
 
 from typing_extensions import Concatenate, ParamSpec
 
-from pyzeta.framework.pyzeta_logging.loggable import Loggable
-
 T = TypeVar("T")
 P = ParamSpec("P")
 
 
-class Advice(Loggable, Generic[T, P]):
+class Advice(Generic[T, P]):
     "Class representation of advice, i.e. an action to perform at runtime."
 
     __slots__ = ("preFunc", "postFunc")

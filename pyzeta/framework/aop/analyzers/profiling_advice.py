@@ -37,9 +37,6 @@ class ProfilingAdvice(Advice[T, P]):
         )
         self._profile = Profile()
         self._statsFile = statsFile
-        self.logger.info(
-            "initialized a new profiling advice - this will increase runtime!"
-        )
 
     def _start(self, *_: P.args, **__: P.kwargs) -> None:
         self._profile.enable()
@@ -47,7 +44,6 @@ class ProfilingAdvice(Advice[T, P]):
     def _stop(self, result: T, *_: P.args, **__: P.kwargs) -> T:
         self._profile.disable()
         self._profile.dump_stats(self.statsFile + ProfilingAdvice.extension)
-        self.logger.info("statistics were written to %s", self.statsFile)
 
         return result
 

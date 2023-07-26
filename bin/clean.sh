@@ -26,6 +26,7 @@ find . -name .hypothesis -type d -exec rm -rf {} \; 2>/dev/null
 rm -rf docs/_build/html/
 rm -rf docs/_build/doctrees/
 rm -rf docs/_build/pdf/
+rm docs/faq/myclass_method1.cprofile
 
 # remove python build artifacts
 rm -rf dist/

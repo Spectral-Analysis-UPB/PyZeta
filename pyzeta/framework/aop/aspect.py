@@ -6,21 +6,18 @@ Authors:\n
 """
 
 from inspect import getmembers, isfunction
-from typing import Callable, Dict, Generic, List, Type, TypeVar, cast
+from typing import Callable, Generic, List, Type, TypeVar, cast
 
 from typing_extensions import ParamSpec
 
-from pyzeta.framework.aop.advice import Advice
-from pyzeta.framework.aop.point_cut import PointCut
 from pyzeta.framework.aop.rule import Rule
-from pyzeta.framework.pyzeta_logging.loggable import Loggable
 
 T = TypeVar("T")
 S = TypeVar("S")
 P = ParamSpec("P")
 
 
-class Aspect(Loggable, Generic[S, T, P]):
+class Aspect(Generic[S, T, P]):
     "Implementation of the central abstraction of aspect oriented programming."
 
     __slots__ = ("rules",)
@@ -46,9 +43,6 @@ class Aspect(Loggable, Generic[S, T, P]):
             for rule in self.rules:
                 pointCut, advice = rule.pointCut, rule.advice
                 if pointCut.match(name):
-                    self.logger.debug(
-                        "found match %s with value %s", name, str(value)
-                    )
                     # any matching method must have signature **P -> T
                     currentMethod = advice(currentMethod)
             setattr(cls, name, currentMethod)
