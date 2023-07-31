@@ -26,7 +26,7 @@ class AbstractZeta(ABC, Loggable):
 
         :param s: array of complex points to evaluate the zeta function on
         :param nMax: the maximal order to use in the cycle expansion
-        :return: array of shape `(number of s-values, nMax)`
+        :return: array of shape `(len(s), nMax)`
         """
 
     def calcD(self, s: tVec, nMax: int) -> tMat:
@@ -36,7 +36,7 @@ class AbstractZeta(ABC, Loggable):
 
         :param s: array of complex points to evaluate the zeta function on
         :param nMax: the maximal order to use in the cycle expansion
-        :return: array of shape `(number of s-values, nMax)`
+        :return: array of shape `(len(s), nMax)`
         """
         self.logger.info(
             "computing dArr at %s using wordLen < %d", str(s), nMax

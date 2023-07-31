@@ -27,3 +27,10 @@ tIntegralVec: TypeAlias = NDArray[float64]
 
 # type used for 2d matrices of boolean values
 tBoolMat: TypeAlias = NDArray[bool_]
+
+# type used for return values of intermediate steps and return values of
+# weighted zeta functions:
+# shape `(len(s), nMax, dMax+1, 2, shape(weights))`
+tDynDetIntermediate: TypeAlias = NDArray[complex128]
+# shape `(len(s), dMax+1, 2, shape(weights))`
+tDynDetReturn: TypeAlias = NDArray[complex128]
