@@ -88,7 +88,7 @@ class SelbergZeta(AbstractZeta):
     # docstr-coverage: inherited
     def calcA(self, s: tVec, nMax: int) -> tMat:
         self.logger.info(
-            "starting Bell polýnomial construction on %d-vector", s.shape[0]
+            "starting Bell polynomial construction on %d-vector", s.shape[0]
         )
 
         sSize = s.shape[0]
