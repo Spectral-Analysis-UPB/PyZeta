@@ -7,6 +7,9 @@ Authors:\n
 
 from numpy import array, cos, cosh, exp, float64, pi, sin, sinh, sqrt
 
+from pyzeta.core.dynamics.function_systems.moebius_system import (
+    MoebiusMapSystem,
+)
 from pyzeta.core.dynamics.function_systems.schottky_exception import (
     InvalidSchottkyException,
 )
@@ -83,3 +86,11 @@ class GeometricFunnelTorus(SchottkySurface):
         "Simple string representation of a geometric funneled torus."
         length, width, twist = self.len, self.width, self.twist
         return f"GeometricFunnelTorus({length:.4g}, {width:.4g}, {twist:.4g})"
+
+
+class FunnelTorusMap(MoebiusMapSystem):
+    "Class representing funneled tori as hyperbolic map systems."
+
+
+class GeometricFunnelTorusMap(MoebiusMapSystem):
+    "Class representing geometric funneled tori as hyperbolic map systems."

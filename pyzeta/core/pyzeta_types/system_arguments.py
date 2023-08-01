@@ -32,3 +32,5 @@ class FunnelTorusArgs(TypedDict, total=True):
 tFunctionSystemInitArgs: TypeAlias = Union[
     HyperbolicCylinderArgs, GeometricFunnelTorusArgs, FunnelTorusArgs
 ]
+
+tMapSystemInitArgs: TypeAlias = tFunctionSystemInitArgs

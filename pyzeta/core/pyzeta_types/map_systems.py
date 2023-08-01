@@ -1,6 +1,6 @@
 """
-Module providing named constants that identify types of implementations of the
-abstract `FunctionSystem` base class.
+Module map_systems.py from the package PyZeta.
+TODO.
 
 Authors:\n
 - Philipp Schuette\n
@@ -9,8 +9,8 @@ Authors:\n
 from enum import Enum
 
 
-class FunctionSystemType(Enum):
-    "Enumeration identifying implementations of iterated function systems."
+class MapSystemType(Enum):
+    "Enumeration identifying implementations of hyperbolic map systems."
     HYPERBOLIC_CYLINDER = "HyperbolicCylinder"
     FLOW_CYLINDER = "FlowAdaptedCylinder"
     FUNNEL_TORUS = "FunnelTorus"

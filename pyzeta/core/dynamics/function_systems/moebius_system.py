@@ -8,10 +8,13 @@ Authors:\n
 from pyzeta.core.dynamics.function_systems.function_system import (
     FunctionSystem,
 )
-from pyzeta.core.pyzeta_types.general import tBoolMat, tMatVec
+from pyzeta.core.dynamics.function_systems.map_system import (
+    HyperbolicMapSystem,
+)
+from pyzeta.core.pyzeta_types.general import tBoolMat, tIndexVec, tMatVec
 
 
-class MoebiusSystem(FunctionSystem):
+class MoebiusFunctionSystem(FunctionSystem):
     """
     Abstract representation of an (iterated) function system the functions of
     which are given by Moebius transformations.
@@ -31,3 +34,19 @@ class MoebiusSystem(FunctionSystem):
     @property
     def adjacencyMatrix(self) -> tBoolMat:
         return self._adj
+
+
+class MoebiusMapSystem(HyperbolicMapSystem):
+    """
+    Abstract representation of a hyperbolic map system which is basically given
+    by the inclusion of an additional dimension in a Moebius transformation
+    based iterated function system.
+    """
+
+    def getGenerators(self, indices: tIndexVec) -> tMatVec:
+        """
+        Convenience method used to retrieve an array of generators of the
+        Moebius transformation based map system. Used in orbit integral
+        calculation.
+        """
+        raise NotImplementedError()

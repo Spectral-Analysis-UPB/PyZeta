@@ -13,31 +13,54 @@ import numpy as np
 from pyzeta.core.dynamics.function_systems.integral_provider import (
     IntegralProvider,
 )
-from pyzeta.core.pyzeta_types.general import tIntegralVec, tWordVec
+from pyzeta.core.dynamics.function_systems.map_system import (
+    HyperbolicMapSystem,
+)
+from pyzeta.core.pyzeta_types.general import tIntegralVec, tVec, tWordVec
 
 
 class PoincareSectionIntegrals(IntegralProvider):
     "Class representing orbit integrals w.r.t. weights on a Poincare section."
 
-    __slots__ = ("domainMinus", "domainPlus", "sigMinus", "sigPlus")
+    __slots__ = (
+        "_mapSystem",
+        "domainMinus",
+        "domainPlus",
+        "sigMinus",
+        "sigPlus",
+    )
 
-    def __init__(self, sigMinus: float, sigPlus: float) -> None:
+    def __init__(
+        self,
+        mapSystem: HyperbolicMapSystem,
+        supportMinus: tVec,
+        supportPlus: tVec,
+        sigMinus: float,
+        sigPlus: float,
+    ) -> None:
         """
-        TODO.
+        Initialize a concrete orbit integral provider that calculates orbit
+        integrals over Gaussian test functions supported on the canonical
+        Poincare section of a given hyperbolic map system.
+
+        :param mapSystem: dynamical system to calculate integrals for
+        :param supportMinus: support coordinates on Poincare section
+        :param supportPlus: support coordinates on Poincare section
+        :param sigMinus: width of Gaussian test functions
+        :param sigPlus: width of Gaussian test functions
         """
-        # TODO: construct domains from args; verify consistency of dimensions
-        self.domainMinus = ...
-        self.domainPlus = ...
-        # TODO: resolve and save map system
+        self._mapSystem = mapSystem
+        # consistency of dimensions is automatically satisfied
+        self.domainMinus, self.domainPlus = np.meshgrid(
+            supportMinus, supportPlus
+        )
         self.sigMinus = sigMinus
         self.sigPlus = sigPlus
 
     # docstr-coverage: inherited
     def getOrbitIntegrals(self, words: tWordVec) -> tIntegralVec:
-        # TODO: ported from FunnelIFS
         integrals = np.zeros(
-            (words.shape[0], *self.domainMinus.shape[0]),
-            dtype=np.float64,
+            (words.shape[0], *self.domainMinus.shape), dtype=np.float64
         )
         if words.shape[0] == 0:
             return integrals

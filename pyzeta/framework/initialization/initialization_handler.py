@@ -11,10 +11,18 @@ from typing import Optional
 from pyzeta.core.dynamics.function_systems.function_system import (
     FunctionSystem,
 )
+from pyzeta.core.dynamics.function_systems.integral_provider import (
+    IntegralProvider,
+)
+from pyzeta.core.dynamics.function_systems.map_system import (
+    HyperbolicMapSystem,
+)
 from pyzeta.core.dynamics.symbolic_dynamics.abstract_dynamics import (
     AbstractSymbolicDynamics,
 )
 from pyzeta.core.factories.function_systems import FunctionSystemFactory
+from pyzeta.core.factories.integrals import OrbitIntegralFactory
+from pyzeta.core.factories.map_systems import MapSystemFactory
 from pyzeta.core.factories.symbolics import SymbolicDynamicsFactory
 from pyzeta.framework.initialization.init_modes import InitModes
 from pyzeta.framework.ioc.container import Container
@@ -110,6 +118,12 @@ class PyZetaInitializationHandler:
         )
         container.registerAsTransient(
             FunctionSystem, FunctionSystemFactory.getConcreteSystem
+        )
+        container.registerAsTransient(
+            HyperbolicMapSystem, MapSystemFactory.getConcreteMapSystem
+        )
+        container.registerAsTransient(
+            IntegralProvider, OrbitIntegralFactory.getConcreteIntegral
         )
 
     @staticmethod

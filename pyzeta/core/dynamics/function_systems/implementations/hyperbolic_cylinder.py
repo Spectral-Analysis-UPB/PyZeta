@@ -8,6 +8,10 @@ Authors:\n
 
 import numpy as np
 
+from pyzeta.core.dynamics.function_systems.moebius_system import (
+    MoebiusFunctionSystem,
+    MoebiusMapSystem,
+)
 from pyzeta.core.dynamics.function_systems.schottky_exception import (
     InvalidSchottkyException,
 )
@@ -46,3 +50,15 @@ class HyperbolicCylinder(SchottkySurface):
     def __str__(self) -> str:
         "Simple string representation of a hyperbolic cylinder."
         return f"HyperbolicCylinder({self.width:.4g})"
+
+
+class HyperbolicCylinderMap(MoebiusMapSystem):
+    "Class representing hyperbolic cylinders as hyperbolic map systems."
+
+
+class FlowAdaptedCylinder(MoebiusFunctionSystem):
+    "Class representation of flow adapted hyperbolic cylinders."
+
+
+class FlowAdaptedCylinderMap(MoebiusMapSystem):
+    "Class representation of flow adapted cylinders as hyperbolic map systems."

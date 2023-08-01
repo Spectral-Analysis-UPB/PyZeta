@@ -12,11 +12,13 @@ from numpy.linalg import inv
 from pyzeta.core.dynamics.function_systems.helpers.schottky_helper import (
     getDisplacementLengths,
 )
-from pyzeta.core.dynamics.function_systems.moebius_system import MoebiusSystem
+from pyzeta.core.dynamics.function_systems.moebius_system import (
+    MoebiusFunctionSystem,
+)
 from pyzeta.core.pyzeta_types.general import tBoolMat, tMatVec, tVec, tWordVec
 
 
-class SchottkySurface(MoebiusSystem):
+class SchottkySurface(MoebiusFunctionSystem):
     "Class representation of the geodesic flow dynamics on Schottky surfaces."
 
     def __init__(self, generators: tMatVec) -> None:

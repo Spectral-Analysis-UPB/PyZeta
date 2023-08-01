@@ -19,6 +19,9 @@ tMat: TypeAlias = NDArray[complex128]
 # type used for 1d arrays of 2x2 matrices of complex numbers (effectively 3d)
 tMatVec: TypeAlias = NDArray[float64]
 
+# type used for 1d arrays of letters (representing indices of generators)
+tIndexVec: TypeAlias = NDArray[uint8]
+
 # type used for 1d arrays of symbolic words (effectively 2d arrays)
 tWordVec: TypeAlias = NDArray[uint8]
 

@@ -5,10 +5,32 @@ Authors:\n
 - Philipp Schuette\n
 """
 
+from typing import List, Tuple
+
 import numpy as np
 
-from pyzeta.core.pyzeta_types.general import tVec
+from pyzeta.core.dynamics.function_systems.integral_provider import (
+    IntegralProvider,
+)
+from pyzeta.core.dynamics.function_systems.map_system import (
+    HyperbolicMapSystem,
+)
+from pyzeta.core.dynamics.symbolic_dynamics.abstract_dynamics import (
+    AbstractSymbolicDynamics,
+)
+from pyzeta.core.pyzeta_types.general import (
+    tDynDetIntermediate,
+    tIntegralVec,
+    tVec,
+    tWordVec,
+)
+from pyzeta.core.pyzeta_types.integral_arguments import tOrbitIntegralInitArgs
+from pyzeta.core.pyzeta_types.integrals import OrbitIntegralType
+from pyzeta.core.pyzeta_types.map_systems import MapSystemType
+from pyzeta.core.pyzeta_types.symbolics import SymbolicDynamicsType
+from pyzeta.core.pyzeta_types.system_arguments import tMapSystemInitArgs
 from pyzeta.core.zetas.abstract_wzeta import AbstractWeightedZeta
+from pyzeta.framework.ioc.container_provider import ContainerProvider
 
 
 class WeightedZeta(AbstractWeightedZeta):
@@ -24,15 +46,45 @@ class WeightedZeta(AbstractWeightedZeta):
         "_integralArrs",
     )
 
-    def __init__(self) -> None:
+    def __init__(
+        self,
+        *,
+        mapSystem: MapSystemType,
+        systemInitArgs: tMapSystemInitArgs,
+        integralType: OrbitIntegralType,
+        integralInitArgs: tOrbitIntegralInitArgs,
+    ) -> None:
         """
         TODO.
         """
-        # TODO: much of the same stuff as for Selberg zetas but with
-        # TODO: additional integral provider!
+        self.logger.info(
+            "creating %s for %s", self.__class__.__name__, str(mapSystem)
+        )
+
+        container = ContainerProvider.getContainer()
+        self._system = container.tryResolve(
+            HyperbolicMapSystem, systemType=mapSystem, initArgs=systemInitArgs
+        )
+        self._symbDyn = container.tryResolve(
+            AbstractSymbolicDynamics,
+            symbolicsType=SymbolicDynamicsType.NON_REDUCED,
+            adjacencyMatrix=self._system.adjacencyMatrix,
+        )
+        self._integralProvider = container.tryResolve(
+            IntegralProvider,
+            integralType=integralType,
+            mapSystem=self._system,
+            initArgs=integralInitArgs,
+        )
+
+        self._initStatus: int = 0
+        self._wordArrs: List[tWordVec] = []
+        self._stabilityArrs: List[Tuple[tVec, tVec]] = []
+        self._integralArrs: List[tIntegralVec] = []
+
         return
 
-    def _initMapSystemData(self, nMax: int) -> None:
+    def _initMapSystemData(self, nMax: int, initIntegrals: bool) -> None:
         """
         TODO.
         """
@@ -47,38 +99,32 @@ class WeightedZeta(AbstractWeightedZeta):
         aArr = np.empty((sSize, nMax), dtype=np.complex128)
 
         # we do not need to initialize period integrals here:
-        # TODO: cannot inherit here because stabilities come from map system!
-        self._initMapSystemData(nMax)
+        self._initMapSystemData(nMax, initIntegrals=False)
         s = s.reshape(-1, 1)
         for n in range(1, nMax + 1):
-            stabilities = self._stabilityArrs[n - 1].reshape(1, -1)
+            stab1, stab2 = self._stabilityArrs[n - 1]
+            stab1, stab2 = stab1.reshape(1, -1), stab2.reshape(1, -1)
             aArr[:, n - 1] = np.sum(
-                np.power(stabilities, s + 1, dtype=complex)
-                / np.power(1 - stabilities, 2),
+                np.power(stab1, s + 1, dtype=complex)
+                / ((1 - stab1) * (stab2 - 1)),
                 axis=1,
             )
             aArr[:, n - 1] *= -1.0 / n
         return aArr
 
-    def calcAf(self, s: tVec, nMax: int, dMax: int) -> tMatVec:
-        r"""
+    def calcWeightedA(
+        self, s: tVec, nMax: int, dMax: int
+    ) -> tDynDetIntermediate:
+        """
         Compute the basis step in the iterative process of computing Bell
-        Polynomials with weights (c.f. documentation of pyzeta.zeta.calcZeta).
+        Polynomials with weights.
 
         :param s: Values entered in the zeta function
-        :type s: numpy.ndarray of shape `(number of values,)`
-        :param nMax: Maximal word length to be included in the iterative
-            approximation
-        :type nMax: int
-        :param dMax: Maximal order of `s`-derivates included in the iterative
-            approximation
-        :type dMax: int
-        :return: first steps in the iterative process of computing Bell
-            Polynomials
-        :rtype: numpy.ndarray of shape `(number of values, nMax, dMax+1, 2,
-            len(xMinusArr), len(xPlusArr))`
+        :param nMax: Maximal word length in the iterative approximation
+        :param dMax: Maximal order of `s`-derivates included
+        :return: first step in iterative Bell polynomial calculation
         """
-        logger.info(
+        self.logger.info(
             f"computing afArr for values {s} using words up to length"
             + f" {nMax}"
         )
