@@ -42,7 +42,8 @@ class HyperbolicMapSystem(ABC, Loggable):
     def getStabilities(self, words: tWordVec) -> Tuple[tVec, tVec]:
         """
         Return the stabilities (i.e. derivatives of map iterates at fixed
-        points) associated with an array of symbolic words.
+        points) associated with an array of symbolic words. Stabilities are
+        guaranteed to be sorted as (contracting, expanding)!
 
         :param words: array of symbolic words determining the map iterates
         :return: stabilities of the (symbolically given) periodic orbits

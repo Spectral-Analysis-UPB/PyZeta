@@ -8,6 +8,8 @@ Authors:\n
 - Philipp Schuette\n
 """
 
+from typing import Tuple
+
 import numpy as np
 
 from pyzeta.core.dynamics.function_systems.integral_provider import (
@@ -40,7 +42,7 @@ class FundamentalDomainIntegrals(IntegralProvider):
         self._mapSystem = mapSystem
         # create support points in the upper half plane
         gridReal, gridImag = np.meshgrid(supportReal, supportImag)
-        self.domain = gridReal * 1j * gridImag
+        self.domain = np.array(gridReal + 1j * gridImag)
         self.sigma = sigma
 
     # docstr-coverage: inherited
@@ -100,3 +102,13 @@ class FundamentalDomainIntegrals(IntegralProvider):
             )
 
         return integrals / (np.sqrt(np.pi) * self.sigma)  # type: ignore
+
+    # docstr-coverage: inherited
+    @property
+    def integralShape(self) -> Tuple[int, int]:
+        shape = self.domain.shape
+        if len(shape) != 2:
+            raise ValueError(
+                "incompatible shape of fundamental domain integrals!"
+            )
+        return shape  # type: ignore

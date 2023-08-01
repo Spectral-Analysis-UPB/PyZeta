@@ -8,6 +8,8 @@ Authors:\n
 - Philipp Schuette\n
 """
 
+from typing import Tuple
+
 import numpy as np
 
 from pyzeta.core.dynamics.function_systems.integral_provider import (
@@ -85,3 +87,13 @@ class PoincareSectionIntegrals(IntegralProvider):
             words = np.roll(words, -1, axis=1)
 
         return integrals / (np.pi * self.sigMinus * self.sigPlus)
+
+    # docstr-coverage: inherited
+    @property
+    def integralShape(self) -> Tuple[int, int]:
+        shape = self.domainMinus.shape
+        if len(shape) != 2:
+            raise ValueError(
+                "incompatible shape of fundamental domain integrals!"
+            )
+        return shape  # type: ignore

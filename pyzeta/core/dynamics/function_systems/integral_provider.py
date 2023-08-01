@@ -6,6 +6,7 @@ Authors:\n
 """
 
 from abc import ABC, abstractmethod
+from typing import Tuple
 
 from pyzeta.core.pyzeta_types.general import tIntegralVec, tWordVec
 
@@ -21,4 +22,15 @@ class IntegralProvider(ABC):
 
         :param words: array of symbolic words to calculate orbit integrals for
         :return: array of orbit integrals on a 2d grid
+        """
+
+    @abstractmethod
+    @property
+    def integralShape(self) -> Tuple[int, int]:
+        """
+        Return the shape of individual orbit integrals as calculated by the
+        given provider instance. Usually this returns `(n, n)` for square
+        and `(n, m)` for non-square arrays of integral values.
+
+        :return: shape of individual arrays of calculated integrals
         """

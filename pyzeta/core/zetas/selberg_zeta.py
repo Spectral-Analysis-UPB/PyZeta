@@ -74,10 +74,13 @@ class SelbergZeta(AbstractZeta):
         :param nMax: maximal word length for initialization of dynamical data
         """
         if self._initStatus >= nMax:
-            self.logger.warning("trying to re-initialize data in zeta!")
+            self.logger.info("trying to re-initialize data in zeta!")
             return
         self.logger.debug("initializing data within zeta function!")
 
+        # TODO: re-use previously calculated data by skipping words!
+        self._wordArrs = []
+        self._stabilityArrs = []
         for words, _ in self._symbDyn.wordGenerator(
             maxWordLength=nMax, cyclRed=True
         ):

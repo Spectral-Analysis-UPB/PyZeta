@@ -40,7 +40,8 @@ class WeightedZeta(AbstractWeightedZeta):
         "_system",
         "_symbDyn",
         "_integralProvider",
-        "_initStatus",
+        "_initStatusStabilities",
+        "_initStatusIntegrals",
         "_wordArrs",
         "_stabilityArrs",
         "_integralArrs",
@@ -77,7 +78,8 @@ class WeightedZeta(AbstractWeightedZeta):
             initArgs=integralInitArgs,
         )
 
-        self._initStatus: int = 0
+        self._initStatusStabilities: int = 0
+        self._initStatusIntegrals: int = 0
         self._wordArrs: List[tWordVec] = []
         self._stabilityArrs: List[Tuple[tVec, tVec]] = []
         self._integralArrs: List[tIntegralVec] = []
@@ -86,9 +88,42 @@ class WeightedZeta(AbstractWeightedZeta):
 
     def _initMapSystemData(self, nMax: int, initIntegrals: bool) -> None:
         """
-        TODO.
+        Initialize symbolic words and associated stabilities as well as orbit
+        integrals for the underlying hyperbolic map system. Initialization
+        happens up to a requested maximal word length and (costly) calculation
+        of orbit integrals can be excluded. All data is stored internally for
+        reuse in dynamical determinant/weighted zeta function evaluations.
+
+        :param nMax: maximal word length for initialization of dynamical data
+        :param initIntegrals: flag indicating whether to calculate integrals
         """
-        # TODO: initialize words, stabilities, integrals from provider
+        if not initIntegrals and self._initStatusStabilities >= nMax:
+            self.logger.info(
+                "trying to re-initialize stability data in weighted zeta!"
+            )
+            return
+        if initIntegrals and self._initStatusIntegrals >= nMax:
+            self.logger.info(
+                "trying to re-initialize integral data in weighted zeta!"
+            )
+            return
+        self.logger.debug("initializing data within weighted zeta function!")
+
+        # TODO: re-use previously calculated data by skipping words!
+        self._wordArrs = []
+        self._stabilityArrs = []
+        self._integralArrs = []
+        for words, _ in self._symbDyn.wordGenerator(
+            maxWordLength=nMax, cyclRed=True
+        ):
+            self._wordArrs.append(words)
+            self._stabilityArrs.append(self._system.getStabilities(words))
+            if initIntegrals:
+                self._integralArrs.append(
+                    self._integralProvider.getOrbitIntegrals(words)
+                )
+                self._initStatusIntegrals = nMax
+        self._initStatusStabilities = nMax
 
     # docstr-coverage: inherited
     def calcA(self, s: tVec, nMax: int) -> tVec:
@@ -125,27 +160,33 @@ class WeightedZeta(AbstractWeightedZeta):
         :return: first step in iterative Bell polynomial calculation
         """
         self.logger.info(
-            f"computing afArr for values {s} using words up to length"
-            + f" {nMax}"
-        )
-        sSize = s.shape[0]
-        minusLen, plusLen = self.xMinusDom.shape
-        afArr = np.zeros(
-            (sSize, nMax, dMax + 1, 2, minusLen, plusLen), dtype=np.complex128
+            "computing afArr for %s with words up to length %d", str(s), nMax
         )
 
-        self.initWords(nMax)
+        sSize = s.shape[0]
+        integralShape = self._integralProvider.integralShape
+        afArr = np.zeros(
+            (sSize, nMax, dMax + 1, 2, *integralShape), dtype=np.complex128
+        )
+
+        self._initMapSystemData(nMax, initIntegrals=True)
+
         s = s.reshape(-1, 1, 1, 1)
         for n in range(1, nMax + 1):
-            lengths = self.lengthArr[n - 1].reshape(1, -1, 1, 1)
-            integrals = self.integralArr[n - 1].reshape(
-                1, -1, minusLen, plusLen
+            stab1, stab2 = self._stabilityArrs[n - 1]
+            stab1, stab2 = stab1.reshape(1, -1, 1, 1), stab2.reshape(
+                1, -1, 1, 1
             )
+
+            integrals = self._integralArrs[n - 1].reshape(
+                1, -1, integralShape[0], integralShape[1]
+            )
+
             for d in range(dMax + 1):
                 tmp = (
-                    np.power(-1.0 * lengths, d)
-                    * np.exp(-(s + 1.0) * lengths)
-                    / np.power(1 - np.exp(-lengths), 2)
+                    np.power(np.log(stab1), d)
+                    * np.power(stab1, s + 1.0, dtype=complex)
+                    / ((1 - stab1) * (stab2 - 1))
                 )
                 afArr[:, n - 1, d, 0, :, :] = np.sum(tmp, axis=1)
                 afArr[:, n - 1, d, 1, :, :] = np.sum(

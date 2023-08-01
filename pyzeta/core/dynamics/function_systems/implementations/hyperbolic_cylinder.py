@@ -6,6 +6,8 @@ Authors:\n
 - Sebastian Albrecht\n
 """
 
+from typing import Tuple
+
 import numpy as np
 
 from pyzeta.core.dynamics.function_systems.moebius_system import (
@@ -18,6 +20,13 @@ from pyzeta.core.dynamics.function_systems.schottky_exception import (
 from pyzeta.core.dynamics.function_systems.schottky_surface import (
     SchottkySurface,
 )
+from pyzeta.core.pyzeta_types.general import (
+    tBoolMat,
+    tIndexVec,
+    tMatVec,
+    tVec,
+    tWordVec,
+)
 
 
 class HyperbolicCylinder(SchottkySurface):
@@ -29,8 +38,8 @@ class HyperbolicCylinder(SchottkySurface):
     __slots__ = ("width",)
 
     def __init__(self, funnelWidth: float) -> None:
-        r"""
-        Initiliaze a hyperbolic cylinder.
+        """
+        Initialize a hyperbolic cylinder.
 
         This Schottky surface is determined by a single parameter representing
         the diameter of the cylinder at its most narrow point (fundamental
@@ -54,6 +63,42 @@ class HyperbolicCylinder(SchottkySurface):
 
 class HyperbolicCylinderMap(MoebiusMapSystem):
     "Class representing hyperbolic cylinders as hyperbolic map systems."
+
+    __slots__ = ("cylinderSystem",)
+
+    def __init__(self, funnelWidth: float) -> None:
+        """
+        Initialize a hyperbolic map system representation of the hyperbolic
+        cylinder. This map system delegates most work to an associated function
+        system.
+
+        :param funnelWidth: width of the cylinder at its most narrow point
+        """
+        self.cylinderSystem = HyperbolicCylinder(funnelWidth=funnelWidth)
+
+    # docstr-coverage: inherited
+    @property
+    def fundamentalIntervals(self) -> Tuple[Tuple[float, float], ...]:
+        raise NotImplementedError()
+
+    # TODO: put this into abstract base class!
+    # docstr-coverage: inherited
+    @property
+    def adjacencyMatrix(self) -> tBoolMat:
+        return self.cylinderSystem.adjacencyMatrix
+
+    # TODO: put this into abstract base class!
+    # docstr-coverage: inherited
+    def getStabilities(self, words: tWordVec) -> Tuple[tVec, tVec]:
+        contractingStabs = self.cylinderSystem.getStabilities(words)
+        return contractingStabs, 1 / contractingStabs
+
+    # docstr-coverage: inherited
+    def getPeriodicPoints(self, words: tWordVec) -> Tuple[tVec, tVec]:
+        raise NotImplementedError()
+
+    def getGenerators(self, indices: tIndexVec) -> tMatVec:
+        raise NotImplementedError()
 
 
 class FlowAdaptedCylinder(MoebiusFunctionSystem):
