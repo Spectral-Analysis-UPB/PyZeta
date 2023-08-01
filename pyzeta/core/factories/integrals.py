@@ -9,10 +9,8 @@ Authors:\n
 
 from typing import Optional
 
-from pyzeta.core.dynamics.function_systems.implementations.fundomain_integrals import (
+from pyzeta.core.dynamics.function_systems.implementations import (
     FundamentalDomainIntegrals,
-)
-from pyzeta.core.dynamics.function_systems.implementations.poincare_integrals import (
     PoincareSectionIntegrals,
 )
 from pyzeta.core.dynamics.function_systems.integral_provider import (

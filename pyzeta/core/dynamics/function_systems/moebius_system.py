@@ -10,13 +10,25 @@ Authors:\n
 
 from abc import abstractmethod
 
+import numpy as np
+from numpy import exp
+
 from pyzeta.core.dynamics.function_systems.function_system import (
     FunctionSystem,
+)
+from pyzeta.core.dynamics.function_systems.helpers.schottky_helper import (
+    getDisplacementLengths,
 )
 from pyzeta.core.dynamics.function_systems.map_system import (
     HyperbolicMapSystem,
 )
-from pyzeta.core.pyzeta_types.general import tBoolMat, tIndexVec, tMatVec
+from pyzeta.core.pyzeta_types.general import (
+    tBoolMat,
+    tIndexVec,
+    tMatVec,
+    tVec,
+    tWordVec,
+)
 
 
 class MoebiusFunctionSystem(FunctionSystem):
@@ -25,21 +37,51 @@ class MoebiusFunctionSystem(FunctionSystem):
     which are given by Moebius transformations.
     """
 
-    __slots__ = ("_gens", "_adj", "_fundInter")
+    __slots__ = ("_phi", "_adj", "_fundInter")
 
     def __init__(self, generators: tMatVec, adjacencyMatrix: tBoolMat) -> None:
         """
         Initialize an iterated function system which is more concretely given
         by iteration of Moebius transformations on the upper half plane.
 
-        :param generators: array of real 2x2 matrices of unit determinant
+        :param generators: array of real 2x2 matrices of non-null determinants
         :param adjacency matrix: boolean matrix determining legal transitions
         """
         # TODO: conduct some sanity checks that the given data is consistent
-        self._gens = generators
+        self._phi = generators
         self._adj = adjacencyMatrix
 
-    # docstr-coverage:inherited
+    def _iterateGenerators(self, words: tWordVec) -> tMatVec:
+        """
+        TODO.
+        """
+        self.logger.debug("iterating generators along %s", str(words))
+        wordNum = words.shape[0]
+        iteratedGenerators = np.empty((wordNum, 2, 2), dtype=np.float64)
+        for i in range(wordNum):
+            temp = np.eye(2, dtype=np.float64)
+            word = words[i]
+            for letter in word:
+                temp = self._phi[letter] @ temp
+            iteratedGenerators[i] = temp
+        self.logger.debug(
+            "iterated generators are %s", str(iteratedGenerators)
+        )
+        return iteratedGenerators
+
+    # docstr-coverage: inherited
+    def getStabilities(self, words: tWordVec) -> tVec:
+        self.logger.info(
+            "computing stabilities (exponentials of displacement lengths)"
+        )
+        iteratedGenerators = self._iterateGenerators(words)
+        displacementLens = getDisplacementLengths(iteratedGenerators)
+        self.logger.debug(
+            "calculated displacement lengths %s", str(displacementLens)
+        )
+        return exp(-displacementLens)  # type: ignore
+
+    # docstr-coverage: inherited
     @property
     def adjacencyMatrix(self) -> tBoolMat:
         return self._adj

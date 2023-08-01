@@ -24,8 +24,8 @@ class IntegralProvider(ABC):
         :return: array of orbit integrals on a 2d grid
         """
 
-    @abstractmethod
     @property
+    @abstractmethod
     def integralShape(self) -> Tuple[int, int]:
         """
         Return the shape of individual orbit integrals as calculated by the

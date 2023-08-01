@@ -30,7 +30,7 @@ from pyzeta.core.pyzeta_types.general import (
 
 
 class HyperbolicCylinder(SchottkySurface):
-    r"""
+    """
     Class representation a hyperbolic cylinder, i.e. the single topological
     possibility for a Schottky surface of rank one.
     """
@@ -103,6 +103,56 @@ class HyperbolicCylinderMap(MoebiusMapSystem):
 
 class FlowAdaptedCylinder(MoebiusFunctionSystem):
     "Class representation of flow adapted hyperbolic cylinders."
+
+    __slots__ = ("width",)
+
+    def __init__(self, funnelWidth: float, rotate: bool) -> None:
+        """
+        Initialize a flow adapted (hyperbolic) cylinder.
+
+        :param funnelWidth: width of the cylinder at its most narrow point
+        """
+        self.width = funnelWidth
+        self.logger.info("creating %s", str(self))
+        generators = self._createGenerators(rotate=rotate)
+        adjacencyMatrix = np.array(
+            [[0, 0, 0, 1], [0, 0, 1, 0], [0, 1, 0, 0], [1, 0, 0, 0]],
+            dtype=np.bool_,
+        )
+
+        try:
+            super().__init__(
+                generators=generators, adjacencyMatrix=adjacencyMatrix
+            )
+        except InvalidSchottkyException as error:
+            raise ValueError(f"can't create {self}!") from error
+
+    def __str__(self) -> str:
+        "Simple string representation of a hyperbolic cylinder."
+        return f"HyperbolicCylinder({self.width:.4g})"
+
+    def _createGenerators(self, rotate: bool) -> tMatVec:
+        """
+        Create the pair of generators and their inverses for a flow adapted
+        cylinder. Generators may be create either rotated or not.
+
+        :param rotate: flag indicating whether generators should be rotated
+        :return: array of generators
+        """
+        if not rotate:
+            gen1 = [[0, np.exp(self.width / 4)], [np.exp(-self.width / 4), 0]]
+            gen2 = [[0, np.exp(-self.width / 4)], [np.exp(self.width / 4), 0]]
+        else:
+            gen1 = [
+                [np.cosh(self.width / 4), -np.sinh(self.width / 4)],
+                [np.sinh(self.width / 4), -np.cosh(self.width / 4)],
+            ]
+            gen2 = [
+                [np.cosh(self.width / 4), np.sinh(self.width / 4)],
+                [-np.sinh(self.width / 4), -np.cosh(self.width / 4)],
+            ]
+        generators = [gen1, gen2, gen1, gen2]
+        return np.array(generators, dtype=np.float64)
 
 
 class FlowAdaptedCylinderMap(MoebiusMapSystem):

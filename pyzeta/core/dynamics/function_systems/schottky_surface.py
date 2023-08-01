@@ -6,16 +6,12 @@ Authors:\n
 """
 
 import numpy as np
-from numpy import exp
 from numpy.linalg import inv
 
-from pyzeta.core.dynamics.function_systems.helpers.schottky_helper import (
-    getDisplacementLengths,
-)
 from pyzeta.core.dynamics.function_systems.moebius_system import (
     MoebiusFunctionSystem,
 )
-from pyzeta.core.pyzeta_types.general import tBoolMat, tMatVec, tVec, tWordVec
+from pyzeta.core.pyzeta_types.general import tBoolMat, tMatVec
 
 
 class SchottkySurface(MoebiusFunctionSystem):
@@ -61,33 +57,3 @@ class SchottkySurface(MoebiusFunctionSystem):
             fullSystem[i] = inv(generators[i])
 
         return fullSystem
-
-    def _iterateGenerators(self, words: tWordVec) -> tMatVec:
-        """
-        TODO.
-        """
-        self.logger.debug("iterating generators along %s", str(words))
-        wordNum = words.shape[0]
-        iteratedGenerators = np.empty((wordNum, 2, 2), dtype=np.float64)
-        for i in range(wordNum):
-            temp = np.eye(2, dtype=np.float64)
-            word = words[i]
-            for letter in word:
-                temp = self._gens[letter] @ temp
-            iteratedGenerators[i] = temp
-        self.logger.debug(
-            "iterated generators are %s", str(iteratedGenerators)
-        )
-        return iteratedGenerators
-
-    # docstr-coverage: inherited
-    def getStabilities(self, words: tWordVec) -> tVec:
-        self.logger.info(
-            "computing stabilities (exponentials of displacement lengths)"
-        )
-        iteratedGenerators = self._iterateGenerators(words)
-        displacementLens = getDisplacementLengths(iteratedGenerators)
-        self.logger.debug(
-            "calculated displacement lengths %s", str(displacementLens)
-        )
-        return exp(-displacementLens)  # type: ignore

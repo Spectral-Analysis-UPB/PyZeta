@@ -3,6 +3,7 @@ Subpackage of `pyzeta.core.dynamics.function_systems` containing the
 implementations of iterated function systems such as Schottky surfaces.
 """
 
+from .fundomain_integrals import FundamentalDomainIntegrals
 from .funnel_torus import (
     FunnelTorus,
     FunnelTorusMap,
@@ -15,6 +16,7 @@ from .hyperbolic_cylinder import (
     HyperbolicCylinder,
     HyperbolicCylinderMap,
 )
+from .poincare_integrals import PoincareSectionIntegrals
 
 __all__ = [
     "FunnelTorus",
@@ -25,4 +27,6 @@ __all__ = [
     "GeometricFunnelTorusMap",
     "HyperbolicCylinderMap",
     "FlowAdaptedCylinderMap",
+    "FundamentalDomainIntegrals",
+    "PoincareSectionIntegrals",
 ]
