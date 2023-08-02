@@ -22,11 +22,12 @@ from pyzeta.framework.initialization.initialization_handler import (
 PyZetaInitializationHandler.initPyZetaServices(mode=InitModes.TEST)
 
 
-def testCylinder() -> None:
+@pt.mark.parametrize("rotate", [True, False])
+def testCylinder(rotate: bool) -> None:
     "Test correct calculation of lengths for the hyperbolic cylinder."
     for width in [1.0, 2.0, 5.0, 10.0, 20.0]:
         for maxLetters in [20, 30]:
-            cylinder = HyperbolicCylinder(funnelWidth=width)
+            cylinder = HyperbolicCylinder(funnelWidth=width, rotate=rotate)
             allZeros = np.zeros((maxLetters), dtype=np.uint8)
             allOnes = np.ones((maxLetters), dtype=np.uint8)
             words = np.array([allZeros, allOnes])

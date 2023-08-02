@@ -5,20 +5,18 @@ Authors:\n
 - Philipp Schuette\n
 """
 
-from numpy import array, cos, cosh, exp, float64, pi, sin, sinh, sqrt
+from numpy import array, cos, cosh, exp, float64, outer, pi, sin, sinh, sqrt
 
-from pyzeta.core.dynamics.function_systems.moebius_system import (
-    MoebiusMapSystem,
-)
 from pyzeta.core.dynamics.function_systems.schottky_exception import (
     InvalidSchottkyException,
 )
-from pyzeta.core.dynamics.function_systems.schottky_surface import (
-    SchottkySurface,
+from pyzeta.core.dynamics.function_systems.schottky_system import (
+    SchottkyFunctionSystem,
+    SchottkyMapSystem,
 )
 
 
-class FunnelTorus(SchottkySurface):
+class FunnelTorus(SchottkyFunctionSystem):
     "Class representation of a torus with one funnel attached."
 
     __slots__ = ("l1", "l2", "phi")
@@ -55,7 +53,19 @@ class FunnelTorus(SchottkySurface):
         )
 
 
-class GeometricFunnelTorus(SchottkySurface):
+class FunnelTorusMap(SchottkyMapSystem):
+    "Class representing funneled tori as hyperbolic map systems."
+
+    def __init__(self, outerLen: float, innerLen: float, angle: float) -> None:
+        """
+        TODO.
+        """
+        super().__init__(
+            FunnelTorus(outerLen=outerLen, innerLen=innerLen, angle=angle)
+        )
+
+
+class GeometricFunnelTorus(SchottkyFunctionSystem):
     "More geometric class representation of a torus with one funnel attached."
 
     __slots__ = ("len", "width", "twist")
@@ -88,9 +98,17 @@ class GeometricFunnelTorus(SchottkySurface):
         return f"GeometricFunnelTorus({length:.4g}, {width:.4g}, {twist:.4g})"
 
 
-class FunnelTorusMap(MoebiusMapSystem):
-    "Class representing funneled tori as hyperbolic map systems."
-
-
-class GeometricFunnelTorusMap(MoebiusMapSystem):
+class GeometricFunnelTorusMap(SchottkyMapSystem):
     "Class representing geometric funneled tori as hyperbolic map systems."
+
+    def __init__(
+        self, outerLen: float, funnelWidth: float, twist: float
+    ) -> None:
+        """
+        TODO.
+        """
+        super().__init__(
+            GeometricFunnelTorus(
+                outerLen=outerLen, funnelWidth=funnelWidth, twist=twist
+            )
+        )
