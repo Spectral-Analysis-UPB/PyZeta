@@ -37,7 +37,7 @@ class MoebiusFunctionSystem(FunctionSystem):
     which are given by Moebius transformations.
     """
 
-    __slots__ = ("_phi", "_adj")
+    __slots__ = ("phi", "_adj")
 
     def __init__(self, generators: tMatVec, adjacencyMatrix: tBoolMat) -> None:
         """
@@ -56,7 +56,7 @@ class MoebiusFunctionSystem(FunctionSystem):
             raise ValueError(
                 "must provide square adjacency matrix for Moebius system!"
             )
-        self._phi = generators
+        self.phi = generators
         self._adj = adjacencyMatrix
 
     def _iterateGenerators(self, words: tWordVec) -> tMatVec:
@@ -75,7 +75,7 @@ class MoebiusFunctionSystem(FunctionSystem):
             temp = np.eye(2, dtype=np.float64)
             word = words[i]
             for letter in word:
-                temp = self._phi[letter] @ temp
+                temp = self.phi[letter] @ temp
             iteratedGenerators[i] = temp
         self.logger.debug(
             "iterated generators are %s", str(iteratedGenerators)
@@ -140,7 +140,7 @@ class MoebiusMapSystem(HyperbolicMapSystem):
         """
         returnGenerators = np.empty((indices.shape[0], 2, 2), dtype=np.float64)
         for j, index in enumerate(indices):
-            returnGenerators[j, :, :] = self._functionSystem._phi[index]
+            returnGenerators[j, :, :] = self._functionSystem.phi[index]
 
         return returnGenerators
 

@@ -27,7 +27,7 @@ PyZetaInitializationHandler.initPyZetaServices(mode=InitModes.TEST)
 
 def testCylinderResonances() -> None:
     "Test Selberg zeta by calculating resonances on the hyperbolic cylinder."
-    initArgs: HyperbolicCylinderArgs = {"funnelWidth": 5.0}
+    initArgs: HyperbolicCylinderArgs = {"funnelWidth": 5.0, "rotate": True}
     zeta = SelbergZeta(
         functionSystem=FunctionSystemType.HYPERBOLIC_CYLINDER,
         systemInitArgs=initArgs,

@@ -90,7 +90,7 @@ class SchottkyMapSystem(MoebiusMapSystem):
         super().__init__(functionSystem)
 
         # determine fundamental intervals
-        fullSystem = self._functionSystem._phi
+        fullSystem = self._functionSystem.phi
         generators = fullSystem[: len(fullSystem) // 2]
         self._fundInter = tuple(getFundDom(*(SL2R(gen) for gen in generators)))
 

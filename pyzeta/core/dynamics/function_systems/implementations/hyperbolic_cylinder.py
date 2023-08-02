@@ -158,7 +158,7 @@ class FlowAdaptedCylinderMap(MoebiusMapSystem):
         TODO.
         """
         firstHalf: List[Tuple[float, float]] = []
-        for reflection in self._functionSystem._phi[:2]:
+        for reflection in self._functionSystem.phi[:2]:
             radius = 1.0 / reflection[1, 0]
             midPoint = reflection[0, 0] * radius
             firstHalf.append((midPoint - abs(radius), midPoint + abs(radius)))
@@ -179,10 +179,10 @@ class FlowAdaptedCylinderMap(MoebiusMapSystem):
         translationInv = np.array(
             [[1, -deltaOffset], [0, 1]], dtype=np.float64
         )
-        for i, reflection in enumerate(self._functionSystem._phi[:2]):
-            self._functionSystem._phi[i] = translation @ reflection
-        for i, reflection in enumerate(self._functionSystem._phi[2:]):
-            self._functionSystem._phi[i + 2] = reflection @ translationInv
+        for i, reflection in enumerate(self._functionSystem.phi[:2]):
+            self._functionSystem.phi[i] = translation @ reflection
+        for i, reflection in enumerate(self._functionSystem.phi[2:]):
+            self._functionSystem.phi[i + 2] = reflection @ translationInv
 
     # docstr-coverage: inherited
     @property

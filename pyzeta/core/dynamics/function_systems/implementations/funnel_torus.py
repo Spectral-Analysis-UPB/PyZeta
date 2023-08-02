@@ -5,7 +5,7 @@ Authors:\n
 - Philipp Schuette\n
 """
 
-from numpy import array, cos, cosh, exp, float64, outer, pi, sin, sinh, sqrt
+from numpy import array, cos, cosh, exp, float64, pi, sin, sinh, sqrt
 
 from pyzeta.core.dynamics.function_systems.schottky_exception import (
     InvalidSchottkyException,
@@ -19,24 +19,26 @@ from pyzeta.core.dynamics.function_systems.schottky_system import (
 class FunnelTorus(SchottkyFunctionSystem):
     "Class representation of a torus with one funnel attached."
 
-    __slots__ = ("l1", "l2", "phi")
+    __slots__ = ("l1", "l2", "varphi")
 
     def __init__(self, outerLen: float, innerLen: float, angle: float) -> None:
         """
         TODO.
         """
-        self.len1, self.len2, self.phi = outerLen, innerLen, angle
+        self.len1, self.len2, self.varphi = outerLen, innerLen, angle
         self.logger.info("initializing %s", str(self))
 
         gen1 = [[exp(self.len1 / 2.0), 0.0], [0.0, exp(-self.len1 / 2.0)]]
         gen2 = [
             [
-                cosh(self.len2 / 2.0) - cos(self.phi) * sinh(self.len2 / 2.0),
-                sinh(self.len2 / 2.0) * sin(self.phi) ** 2,
+                cosh(self.len2 / 2.0)
+                - cos(self.varphi) * sinh(self.len2 / 2.0),
+                sinh(self.len2 / 2.0) * sin(self.varphi) ** 2,
             ],
             [
                 sinh(self.len2 / 2.0),
-                cosh(self.len2 / 2.0) + cos(self.phi) * sinh(self.len2 / 2.0),
+                cosh(self.len2 / 2.0)
+                + cos(self.varphi) * sinh(self.len2 / 2.0),
             ],
         ]
 
@@ -47,7 +49,7 @@ class FunnelTorus(SchottkyFunctionSystem):
 
     def __str__(self) -> str:
         "Simple string representation of a funneled torus."
-        phiFrac = pi / self.phi
+        phiFrac = pi / self.varphi
         return (
             f"FunnelTorus({self.len1:.4g}, {self.len2:.4g}, pi/{phiFrac:.4g})"
         )

@@ -13,6 +13,12 @@ from typing_extensions import TypeAlias
 class HyperbolicCylinderArgs(TypedDict, total=True):
     "Init arguments for a hyperbolic cylinder."
     funnelWidth: float
+    rotate: bool
+
+
+class CylinderMapArgs(TypedDict, total=True):
+    "Init arguments for a (hyperbolic) cylinder based map system."
+    funnelWidth: float
 
 
 class GeometricFunnelTorusArgs(TypedDict, total=True):
@@ -33,4 +39,6 @@ tFunctionSystemInitArgs: TypeAlias = Union[
     HyperbolicCylinderArgs, GeometricFunnelTorusArgs, FunnelTorusArgs
 ]
 
-tMapSystemInitArgs: TypeAlias = tFunctionSystemInitArgs
+tMapSystemInitArgs: TypeAlias = Union[
+    CylinderMapArgs, GeometricFunnelTorusArgs, FunnelTorusArgs
+]
