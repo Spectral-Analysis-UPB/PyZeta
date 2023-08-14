@@ -10,14 +10,13 @@ Authors:\n
 
 from sys import argv
 
-from pyzeal.cli.controller_facade import CLIControllerFacade
-from pyzeal.cli.parser_facade import PyZEALParserInterface
-from pyzeta.framework.pyzeta_types.init_modes import InitModes
-from pyzeal.utils.service_locator import ServiceLocator
-
+from pyzeta.framework.initialization.init_modes import InitModes
 from pyzeta.framework.initialization.initialization_handler import (
     PyZetaInitializationHandler,
 )
+from pyzeta.framework.ioc.container_provider import ContainerProvider
+from pyzeta.view.cli.controller_facade import CLIControllerFacade
+from pyzeta.view.cli.parser_facade import PyZetaParserInterface
 
 
 class PyZetaEntry:
@@ -30,14 +29,15 @@ class PyZetaEntry:
         """
         PyZetaInitializationHandler.initPyZetaServices(InitModes.CLI)
 
-        parser = ServiceLocator.tryResolve(PyZEALParserInterface)
+        container = ContainerProvider.getContainer()
+        parser = container.tryResolve(PyZetaParserInterface)
         settingsArgs, pluginArgs, testingArgs = parser.parseArgs()
 
         # check if any arguments were provided and respond with usage hint
         if len(argv) < 2:
             print("this is the CLI of the PyZEAL package. use '-h' for help.")
 
-        controller = ServiceLocator.tryResolve(CLIControllerFacade)
+        controller = container.tryResolve(CLIControllerFacade)
         controller.handleViewSubcommand(settingsArgs)
         controller.handleChangeSubcommand(settingsArgs)
         controller.handlePluginSubcommand(pluginArgs)

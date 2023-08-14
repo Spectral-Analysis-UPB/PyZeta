@@ -1,5 +1,6 @@
 """
-TODO.
+Module implementing a facade for the concrete command line interface controller
+class implemented within `PyZeta`.
 
 Authors:\n
 - Philipp Schuette\n
@@ -17,7 +18,7 @@ from pyzeal.cli.parse_results import (
 @runtime_checkable
 class CLIControllerFacade(Protocol):
     """
-    Interface for a generic controller instance used with the `PyZEAL` cli.
+    Interface for a generic controller instance used with the `PyZeta` cli.
     """
 
     def handleViewSubcommand(self, args: SettingsParseResults) -> None:
@@ -49,7 +50,7 @@ class CLIControllerFacade(Protocol):
     def handleTestingOption(self, args: InstallTestingParseResults) -> bool:
         """
         Check if the '--test' option was selected and start testing the local
-        `PyZEAL` installation accordingly.
+        `PyZeta` installation accordingly.
 
         :param args: parsed testing option
         :return: flag indicating if the testing option was given
