@@ -27,6 +27,12 @@ class FundamentalDomainIntegralsArgs(TypedDict, total=True):
     sigma: float
 
 
+class ConstantIntegralsArgs(TypedDict, total=True):
+    "Init arguments for constant orbit integrals are empty."
+
+
 tOrbitIntegralInitArgs: TypeAlias = Union[
-    PoincareIntegralsArgs, FundamentalDomainIntegralsArgs
+    PoincareIntegralsArgs,
+    FundamentalDomainIntegralsArgs,
+    ConstantIntegralsArgs,
 ]

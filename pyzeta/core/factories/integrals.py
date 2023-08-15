@@ -10,6 +10,7 @@ Authors:\n
 from typing import Optional
 
 from pyzeta.core.dynamics.function_systems.implementations import (
+    ConstantIntegrals,
     FundamentalDomainIntegrals,
     PoincareSectionIntegrals,
 )
@@ -67,6 +68,9 @@ class OrbitIntegralFactory:
                     f"cannot use {mapSystem} with {integralType}!"
                 )
             return FundamentalDomainIntegrals(mapSystem=mapSystem, **initArgs)
+
+        if integralType == OrbitIntegralType.CONSTANT:
+            return ConstantIntegrals()
 
         raise ValueError(
             f"your requested system {integralType.value} does not exist"

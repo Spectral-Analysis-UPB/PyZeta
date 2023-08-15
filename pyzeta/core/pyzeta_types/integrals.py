@@ -13,3 +13,4 @@ class OrbitIntegralType(Enum):
     "Named constants identifying the available orbit integral providers."
     POINCARE = "PoincareSectionIntegrals"
     FUNDAMENTAL_DOMAIN = "FundamentalDomainIntegrals"
+    CONSTANT = "ConstantIntegrals"

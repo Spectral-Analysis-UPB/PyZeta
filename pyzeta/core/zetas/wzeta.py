@@ -140,7 +140,7 @@ class WeightedZeta(AbstractWeightedZeta):
             stab1, stab2 = self._stabilityArrs[n - 1]
             stab1, stab2 = stab1.reshape(1, -1), stab2.reshape(1, -1)
             aArr[:, n - 1] = np.sum(
-                np.power(stab1, s + 1, dtype=complex)
+                np.power(stab1, s, dtype=complex)
                 / ((1 - stab1) * (stab2 - 1)),
                 axis=1,
             )

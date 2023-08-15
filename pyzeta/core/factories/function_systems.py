@@ -12,6 +12,7 @@ from pyzeta.core.dynamics.function_systems.function_system import (
     FunctionSystem,
 )
 from pyzeta.core.dynamics.function_systems.implementations import (
+    FlowAdaptedCylinder,
     FunnelTorus,
     GeometricFunnelTorus,
     HyperbolicCylinder,
@@ -59,6 +60,9 @@ class FunctionSystemFactory:
 
         if systemType == FunctionSystemType.HYPERBOLIC_CYLINDER:
             return HyperbolicCylinder(**initArgs)
+
+        if systemType == FunctionSystemType.FLOW_CYLINDER:
+            return FlowAdaptedCylinder(**initArgs)
 
         raise ValueError(
             f"your requested system {systemType.value} does not exist"
