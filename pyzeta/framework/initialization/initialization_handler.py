@@ -24,6 +24,9 @@ from pyzeta.core.factories.function_systems import FunctionSystemFactory
 from pyzeta.core.factories.integrals import OrbitIntegralFactory
 from pyzeta.core.factories.map_systems import MapSystemFactory
 from pyzeta.core.factories.symbolics import SymbolicDynamicsFactory
+from pyzeta.core.factories.zetas import ZetaFactory
+from pyzeta.core.zetas.abstract_wzeta import AbstractWeightedZeta
+from pyzeta.core.zetas.abstract_zeta import AbstractZeta
 from pyzeta.framework.initialization.init_modes import InitModes
 from pyzeta.framework.ioc.container import Container
 from pyzeta.framework.ioc.container_provider import ContainerProvider
@@ -124,6 +127,12 @@ class PyZetaInitializationHandler:
         )
         container.registerAsTransient(
             IntegralProvider, OrbitIntegralFactory.getConcreteIntegral
+        )
+        container.registerAsTransient(
+            AbstractZeta, ZetaFactory.getConcreteZeta
+        )
+        container.registerAsTransient(
+            AbstractWeightedZeta, ZetaFactory.getConcreteWeightedZeta
         )
 
     @staticmethod

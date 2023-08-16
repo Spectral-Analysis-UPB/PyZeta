@@ -58,21 +58,27 @@ class AbstractWeightedZeta(AbstractZeta):
         dfArr[:, 0, 0, 0, ...] = 1
         # calculate the induction step
         for n in range(1, nMax + 1):
-            for d in range(0, dMax + 1):
-                for k in range(1, n + 1):
+            for k in range(1, n + 1):
+                for d in range(0, dMax + 1):
                     for m in range(0, d + 1):
-                        dfArr[:, n, d, 0, ...] += binom(d, m) * (
-                            dfArr[:, n - k, m, 0, ...]
-                            * afArr[:, k - 1, d - m, 0, ...]
+                        dfArr[:, n, d, 0, ...] += (
+                            (1.0 * k / n)
+                            * binom(d, m)
+                            * (
+                                dfArr[:, n - k, m, 0, ...]
+                                * afArr[:, k - 1, d - m, 0, ...]
+                            )
                         )
-                        dfArr[:, n, d, 1, :, :] += binom(d, m) * (
-                            dfArr[:, n - k, m, 1, ...]
-                            * afArr[:, k - 1, d - m, 0, ...]
-                            + dfArr[:, n - k, m, 0, ...]
-                            * afArr[:, k - 1, d - m, 1, ...]
+                        dfArr[:, n, d, 1, :, :] += (
+                            (1.0 * k / n)
+                            * binom(d, m)
+                            * (
+                                dfArr[:, n - k, m, 1, ...]
+                                * afArr[:, k - 1, d - m, 0, ...]
+                                + dfArr[:, n - k, m, 0, ...]
+                                * afArr[:, k - 1, d - m, 1, ...]
+                            )
                         )
-                    dfArr[:, n, d, :, ...] *= k
-                dfArr[:, n, d, :, ...] *= 1.0 / n
 
         return dfArr
 
