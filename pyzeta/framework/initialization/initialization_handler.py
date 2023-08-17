@@ -11,10 +11,17 @@ from typing import Optional
 from pyzeta.framework.initialization.init_modes import InitModes
 from pyzeta.framework.ioc.container import Container
 from pyzeta.framework.ioc.container_provider import ContainerProvider
+from pyzeta.framework.plugins.plugin_loader import PluginLoader
 from pyzeta.framework.pyzeta_logging.log_manager import LogManager
 from pyzeta.framework.pyzeta_logging.logger_facade import PyZetaLogger
 from pyzeta.framework.settings.settings_factory import SettingsServiceFactory
 from pyzeta.framework.settings.settings_service import SettingsService
+from pyzeta.view.cli.cli_controller import CLIController
+from pyzeta.view.cli.cli_parser import PyZetaParser
+from pyzeta.view.cli.controller_facade import CLIControllerFacade
+from pyzeta.view.cli.install_test_facade import InstallTestingHandlerFacade
+from pyzeta.view.cli.install_test_handler import InstallTestingHandler
+from pyzeta.view.cli.parser_facade import PyZetaParserInterface
 
 
 class PyZetaInitializationHandler:
@@ -61,6 +68,11 @@ class PyZetaInitializationHandler:
         elif mode == InitModes.GUI:
             PyZetaInitializationHandler.initGUIServices(container)
 
+        # plugins cannot be loaded in cli mode (plugins might be broken, ...)!
+        if mode not in InitModes.CLI:
+            PyZetaInitializationHandler._logger.info("loading plugins...")
+            PluginLoader.loadPlugins()
+
         # initialization complete!
         ContainerProvider.setContainer(container)
         PyZetaInitializationHandler.initialized = True
@@ -84,6 +96,11 @@ class PyZetaInitializationHandler:
 
         :param container: container to register cli services with
         """
+        container.registerAsSingleton(PyZetaParserInterface, PyZetaParser())
+        container.registerAsTransient(CLIControllerFacade, CLIController)
+        container.registerAsTransient(
+            InstallTestingHandlerFacade, InstallTestingHandler
+        )
 
     @staticmethod
     def initSCRIPTServices(container: Container) -> None:

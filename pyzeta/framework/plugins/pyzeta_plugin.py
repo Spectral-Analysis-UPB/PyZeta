@@ -11,26 +11,20 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Callable, Generic, Tuple, Type, TypeVar, Union
 
-from pyzeal.algorithms.estimators.argument_estimator import ArgumentEstimator
-from pyzeal.algorithms.finder_algorithm import FinderAlgorithm
-from pyzeal.cli.parser_facade import PyZEALParserInterface
-from pyzeal.settings.settings_service import SettingsService
-from pyzeal.utils.containers.root_container import RootContainer
+from pyzeta.framework.settings.settings_service import SettingsService
+from pyzeta.view.cli.parser_facade import PyZetaParserInterface
 
 tPluggable = Union[
-    FinderAlgorithm,
-    ArgumentEstimator,
-    RootContainer,
     SettingsService,
-    PyZEALParserInterface,
+    PyZetaParserInterface,
 ]
 T_co = TypeVar("T_co", bound=tPluggable, covariant=True)
 
 
-class PyZEALPlugin(ABC, Generic[T_co]):
+class PyZetaPlugin(ABC, Generic[T_co]):
     """
     Interface for plugins. Methods for instantiation and plugin information
-    need to be implemented.
+    need to be implemented by concrete subclasses.
     """
 
     def __str__(self) -> str:
@@ -54,12 +48,12 @@ class PyZEALPlugin(ABC, Generic[T_co]):
 
     @staticmethod
     @abstractmethod
-    def getInstance() -> PyZEALPlugin[T_co]:
+    def getInstance() -> PyZetaPlugin[T_co]:
         """
-        Return the singleton instance of `PyZEALPlugin` which provides a
+        Return the singleton instance of `PyZetaPlugin` which provides a
         service of type `T_co`.
 
-        :return: `PyZEALPlugin` instance.
+        :return: `PyZetaPlugin` instance.
         """
 
     @property
@@ -70,7 +64,6 @@ class PyZEALPlugin(ABC, Generic[T_co]):
 
         :return: Service type of plugin.
         """
-        ...
 
     @property
     @abstractmethod
@@ -80,7 +73,6 @@ class PyZEALPlugin(ABC, Generic[T_co]):
 
         :return: Plugin name.
         """
-        ...
 
     @property
     @abstractmethod
@@ -90,4 +82,3 @@ class PyZEALPlugin(ABC, Generic[T_co]):
 
         :return: Plugin version.
         """
-        ...

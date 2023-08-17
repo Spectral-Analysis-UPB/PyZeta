@@ -1,5 +1,5 @@
 """
-Module installation_helper.py from the package PyZEAL.
+Module installation_helper.py from the PyZeta project.
 This module contains various helper functions related to plugin installation.
 
 Authors:\n
@@ -10,7 +10,7 @@ from os import remove
 from os.path import exists, join
 from shutil import copy
 
-from pyzeal.plugins.plugin_loader import PLUGIN_INSTALL_DIR
+from pyzeta.framework.plugins.plugin_loader import PLUGIN_INSTALL_DIR
 
 
 class InstallationHelper:

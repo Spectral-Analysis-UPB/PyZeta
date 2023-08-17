@@ -6,27 +6,24 @@ Authors:\n
 """
 
 from os.path import abspath
-from typing import Optional, Tuple
+from typing import Optional
 
-from pyzeal.cli.controller_facade import CLIControllerFacade
-from pyzeal.cli.parse_results import (
+from pyzeta.framework.plugins.installation_helper import InstallationHelper
+from pyzeta.framework.plugins.plugin_loader import PluginLoader
+from pyzeta.framework.pyzeta_logging.log_levels import LogLevel
+from pyzeta.framework.settings.settings_service import SettingsService
+from pyzeta.view.cli.controller_facade import CLIControllerFacade
+from pyzeta.view.cli.install_test_facade import InstallTestingHandlerFacade
+from pyzeta.view.cli.parse_results import (
     InstallTestingParseResults,
     PluginParseResults,
     SettingsParseResults,
 )
-from pyzeal.plugins.installation_helper import InstallationHelper
-from pyzeal.plugins.plugin_loader import PluginLoader
-from pyzeal.pyzeal_logging.log_levels import LogLevel
-from pyzeal.pyzeal_types.algorithm_types import AlgorithmTypes
-from pyzeal.pyzeal_types.container_types import ContainerTypes
-from pyzeal.pyzeal_types.estimator_types import EstimatorTypes
-from pyzeal.settings.settings_service import SettingsService
-from pyzeal.utils.install_test_facade import InstallTestingHandlerFacade
 
 
 class CLIController(CLIControllerFacade):
     """
-    Controller class handling the business logic of the `PyZEAL` command line
+    Controller class handling the business logic of the `PyZeta` command line
     interface.
     """
 
@@ -49,22 +46,10 @@ class CLIController(CLIControllerFacade):
     # docstr-coverage:inherited
     def handleChangeSubcommand(self, args: SettingsParseResults) -> None:
         settingsService = self.settingsService
-        if args.container:
-            self.changeContainerSetting(
-                args.container + "_container", settingsService
-            )
-        if args.algorithm:
-            self.changeAlgorithmSetting(args.algorithm, settingsService)
-        if args.estimator:
-            self.changeEstimatorSetting(
-                args.estimator + "_estimator", settingsService
-            )
         if args.logLevel:
             self.changeLogLevelSetting(args.logLevel, settingsService)
         if args.verbose:
             self.changeVerbositySetting(args.verbose, settingsService)
-        if args.precision:
-            self.changePrecisionSetting(args.precision, settingsService)
 
     # docstr-coverage:inherited
     def handlePluginSubcommand(self, args: PluginParseResults) -> None:
@@ -99,103 +84,18 @@ class CLIController(CLIControllerFacade):
     # docstr-coverage:inherited
     def handleTestingOption(self, args: InstallTestingParseResults) -> bool:
         if args.doTest:
-            # right now we do not include root finder tests here to reduce
-            # runtime; one could include those tests after performance increase
-            modules = ["cli", "algorithms", "containers", "estimators"]
+            # slow tests are excluded on purpose
+            modules = [
+                # "dynamics/function_systems/",
+                "dynamics/symbolic_dynamics/",
+                "framework/feature_toggle",
+                "framework/ioc",
+                # "zetas",
+            ]
             for module in modules:
                 self.testingHandler.testModule(module=module)
             return True
         return False
-
-    @staticmethod
-    def changeContainerSetting(
-        container: str, service: SettingsService
-    ) -> None:
-        """
-        Try to change the default container setting in `service` to
-        `container`. If the container name is invalid, `SystemExit(2)` is
-        raised.
-
-        :param container: New default container name (case-insensitive).
-        :param service: Settings service to update.
-        :raises SystemExit: Raised when no matching container can be found.
-        """
-        oldContainer = service.defaultContainer
-        newContainer: Optional[ContainerTypes] = None
-        for containerType in ContainerTypes:
-            if containerType.name == container.upper():
-                newContainer = containerType
-                break
-        if newContainer is None:
-            raise SystemExit(2)
-        if newContainer != oldContainer:
-            service.defaultContainer = newContainer
-            print(
-                "changed default container:   "
-                + oldContainer.value
-                + " --> "
-                + oldContainer.value
-            )
-
-    @staticmethod
-    def changeAlgorithmSetting(
-        algorithm: str, service: SettingsService
-    ) -> None:
-        """
-        Try to change the default algorithm setting in `service` to
-        `algorithm`. If the algorithm name is invalid, `SystemExit(2)` is
-        raised.
-
-        :param algorithm: New default algorithm name (case-insensitive)
-        :param service: Settings service to update.
-        :raises SystemExit: Raised when no matching algorithm can be found.
-        """
-        oldAlgorithm = service.defaultAlgorithm
-        newAlgorithm: Optional[AlgorithmTypes] = None
-        for algorithmType in AlgorithmTypes:
-            if algorithmType.name == algorithm.upper():
-                newAlgorithm = algorithmType
-                break
-        if newAlgorithm is None:
-            raise SystemExit(2)
-        if newAlgorithm != oldAlgorithm:
-            service.defaultAlgorithm = newAlgorithm
-            print(
-                "changed default algorithm:   "
-                + oldAlgorithm.value
-                + " --> "
-                + newAlgorithm.value
-            )
-
-    @staticmethod
-    def changeEstimatorSetting(
-        estimator: str, service: SettingsService
-    ) -> None:
-        """
-        Try to change the default estimator setting in `service` to
-        `estimator`. If the estimator name is invalid, `SystemExit(2)` is
-        raised.
-
-        :param estimator: New default estimator name (case-insensitive)
-        :param service: Settings service to update.
-        :raises SystemExit: Raised when no matching algorithm can be found.
-        """
-        oldEstimator = service.defaultEstimator
-        newEstimator: Optional[EstimatorTypes] = None
-        for estimatorType in EstimatorTypes:
-            if estimatorType.name == estimator.upper():
-                newEstimator = estimatorType
-                break
-        if newEstimator is None:
-            raise SystemExit(2)
-        if newEstimator != oldEstimator:
-            service.defaultEstimator = newEstimator
-            print(
-                "changed default estimator:   "
-                + oldEstimator.value
-                + " --> "
-                + newEstimator.value
-            )
 
     @staticmethod
     def changeLogLevelSetting(logLevel: str, service: SettingsService) -> None:
@@ -242,26 +142,4 @@ class CLIController(CLIControllerFacade):
                 + str(oldVerbosity)
                 + " --> "
                 + str(newVerbosity)
-            )
-
-    @staticmethod
-    def changePrecisionSetting(
-        precision: Tuple[int, int], service: SettingsService
-    ) -> None:
-        """
-        Try to update the precision setting of `service`. If `precision` is not
-        a pair of ints, `SystemExit(2)` is raised.
-
-        :param precision: New precision setting
-        :param service: Setting service to update
-        """
-        oldPrecision = service.precision
-        newPrecision: Tuple[int, int] = precision
-        if newPrecision != oldPrecision:
-            service.precision = newPrecision
-            print(
-                "changed default precision:   "
-                + str(oldPrecision)
-                + " --> "
-                + str(newPrecision)
             )

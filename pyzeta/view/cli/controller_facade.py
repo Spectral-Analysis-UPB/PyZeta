@@ -8,7 +8,7 @@ Authors:\n
 
 from typing import Protocol, runtime_checkable
 
-from pyzeal.cli.parse_results import (
+from pyzeta.view.cli.parse_results import (
     InstallTestingParseResults,
     PluginParseResults,
     SettingsParseResults,

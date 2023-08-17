@@ -10,7 +10,7 @@ Authors:\n
 
 from typing import Protocol, Tuple, runtime_checkable
 
-from pyzeal.cli.parse_results import (
+from pyzeta.view.cli.parse_results import (
     InstallTestingParseResults,
     PluginParseResults,
     SettingsParseResults,

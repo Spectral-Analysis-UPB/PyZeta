@@ -1,7 +1,7 @@
 """
 This module provides the main CLI entry point of the PyZeta project through the
 function `mainPyZeta`.At the moment it provides facilities to query the
-currently installed PyZEAL version, view and manipulate settings, (un-)install
+currently installed PyZeta version, view and manipulate settings, (un-)install
 plugins, and invoke unit tests on the local installation.
 
 Authors:\n
@@ -35,7 +35,7 @@ class PyZetaEntry:
 
         # check if any arguments were provided and respond with usage hint
         if len(argv) < 2:
-            print("this is the CLI of the PyZEAL package. use '-h' for help.")
+            print("this is the CLI of the PyZeta package. use '-h' for help.")
 
         controller = container.tryResolve(CLIControllerFacade)
         controller.handleViewSubcommand(settingsArgs)

@@ -1,5 +1,5 @@
 """
-Module plugin_loader.py from the package PyZEAL.
+Module plugin_loader.py from the PyZeta project.
 This module handles discovering, loading and registering of plugins.
 
 Authors:\n
@@ -16,9 +16,9 @@ from re import compile as compileRegex
 from types import ModuleType
 from typing import Final, List, Optional, Type
 
-from pyzeal.plugins.pyzeal_plugin import PyZEALPlugin, tPluggable
-from pyzeal.pyzeal_logging.loggable import Loggable
-from pyzeal.utils.service_locator import ServiceLocator
+from pyzeta.framework.ioc.container_provider import ContainerProvider
+from pyzeta.framework.plugins.pyzeta_plugin import PyZetaPlugin, tPluggable
+from pyzeta.framework.pyzeta_logging.loggable import Loggable
 
 # default location where custom plugins are installed
 PLUGIN_INSTALL_DIR: Final[str] = join(dirname(__file__), "custom_plugins")
@@ -48,7 +48,7 @@ class PluginLoader(Loggable):
     @staticmethod
     def loadPlugins(
         path: str = PLUGIN_INSTALL_DIR,
-    ) -> List[PyZEALPlugin[tPluggable]]:
+    ) -> List[PyZetaPlugin[tPluggable]]:
         """
         Load plugins present in `path`.
 
@@ -56,10 +56,10 @@ class PluginLoader(Loggable):
         :return: List of loaded plugins.
         """
         instance = PluginLoader.getInstance()
-        plugins: List[PyZEALPlugin[tPluggable]] = []
+        plugins: List[PyZetaPlugin[tPluggable]] = []
         for plugin in instance.locateAndLoadPlugins(path):
             pluginInstance = plugin.getInstance()
-            ServiceLocator.registerAsTransient(
+            ContainerProvider.getContainer().registerAsTransient(
                 pluginInstance.pluginType, plugin.initialize()
             )
             plugins.append(pluginInstance)
@@ -67,14 +67,14 @@ class PluginLoader(Loggable):
 
     def locateAndLoadPlugins(
         self, path: str = PLUGIN_INSTALL_DIR
-    ) -> List[Type[PyZEALPlugin[tPluggable]]]:
+    ) -> List[Type[PyZetaPlugin[tPluggable]]]:
         """
         Discover plugins at a given path and load them.
 
         :param path: Path to search for plugins, defaults to PLUGIN_INSTALL_DIR
         :return: List of found plugins.
         """
-        plugins: List[Type[PyZEALPlugin[tPluggable]]] = []
+        plugins: List[Type[PyZetaPlugin[tPluggable]]] = []
         self.logger.info("starting plugin discovery in %s...", path)
         candidates = PluginLoader.discoverModules(path)
         self.logger.debug("contents of plugin directory: %s", str(candidates))
@@ -83,7 +83,7 @@ class PluginLoader(Loggable):
                 continue
             self.logger.info("module %s might contain a plugin...", candidate)
             module = import_module(
-                candidate, package="pyzeal_plugins.custom_plugins"
+                candidate, package="pyzeta..framework.plugins.custom_plugins"
             )
             plugin = self.loadPlugin(module)
             if plugin is not None:
@@ -92,7 +92,7 @@ class PluginLoader(Loggable):
 
     def loadPlugin(
         self, candidateModule: ModuleType
-    ) -> Optional[Type[PyZEALPlugin[tPluggable]]]:
+    ) -> Optional[Type[PyZetaPlugin[tPluggable]]]:
         """
         Try to load a candidate plugin and return it if successful.
 
@@ -106,10 +106,10 @@ class PluginLoader(Loggable):
         )
         for attributeName in attributeNames:
             attribute = getattr(candidateModule, attributeName)
-            if attribute == PyZEALPlugin:
+            if attribute == PyZetaPlugin:
                 continue
             if isinstance(attribute, ABCMeta):
-                if issubclass(attribute, PyZEALPlugin):
+                if issubclass(attribute, PyZetaPlugin):
                     self.logger.info(
                         "plugin implementation [ %s ] found!",
                         str(attribute),

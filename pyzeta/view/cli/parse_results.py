@@ -1,12 +1,11 @@
 """
-This module contains dataclasses for storing results fof command-line parsing.
+This module contains dataclasses for storing results of command-line parsing.
 
 Authors:\n
 - Philipp Schuette\n
 """
 
 from dataclasses import dataclass
-from typing import Optional, Tuple
 
 
 @dataclass
@@ -16,12 +15,8 @@ class SettingsParseResults:
     """
 
     doPrint: bool
-    container: str
-    algorithm: str
-    estimator: str
     logLevel: str
     verbose: str
-    precision: Optional[Tuple[int, int]]
 
 
 @dataclass
