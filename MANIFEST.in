@@ -1,3 +1,5 @@
 include README.rst
 include pyzeta/py.typed
 include docs/_static/docstr_coverage_badge.svg
+include pyzeta/framework/settings/json_settings/default_settings.json
+include pyzeta/framework/settings/json_settings/default_schema.json

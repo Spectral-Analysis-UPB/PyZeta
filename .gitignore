@@ -1,3 +1,6 @@
+# ignore custom settings file
+pyzeta/framework/settings/json_settings/custom_settings.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
