@@ -47,7 +47,7 @@ class GroupPlugin(PyZetaPlugin[SymmetryGroup]):
 
     @staticmethod
     def initialize() -> Callable[..., SymmetryGroup]:
-        "This is the hook of plugins into `PyZEAL`."
+        "This is the hook of plugins into `PyZeta`."
         arg1, arg2 = customData["arg1"], customData["arg2"]
         return lambda: TestGroup(arg1=arg1, arg2=arg2)
 
