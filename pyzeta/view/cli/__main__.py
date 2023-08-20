@@ -18,6 +18,8 @@ from pyzeta.framework.ioc.container_provider import ContainerProvider
 from pyzeta.view.cli.controller_facade import CLIControllerFacade
 from pyzeta.view.cli.parser_facade import PyZetaParserInterface
 
+PyZetaInitializationHandler.initPyZetaServices(InitModes.CLI)
+
 
 class PyZetaEntry:
     "Static entry point of the PyZeta command line interface."
@@ -27,8 +29,6 @@ class PyZetaEntry:
         """
         Main entry point for the CLI of the PyZeta project.
         """
-        PyZetaInitializationHandler.initPyZetaServices(InitModes.CLI)
-
         container = ContainerProvider.getContainer()
         parser = container.tryResolve(PyZetaParserInterface)
         settingsArgs, pluginArgs, testingArgs = parser.parseArgs()

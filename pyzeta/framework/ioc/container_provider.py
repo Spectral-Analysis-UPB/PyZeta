@@ -1,6 +1,8 @@
 """
 Module container_provider.py from the package PyZeta.
-TODO
+The static (global) ContainerProvider exposes the global container instance
+valid for the current project instance. Every object that requires a container
+and cannot obtain it from anywhere else should request it from here.
 
 Authors:\n
 - Philipp Schuette\n

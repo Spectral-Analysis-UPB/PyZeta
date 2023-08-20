@@ -16,7 +16,7 @@ from re import compile as compileRegex
 from types import ModuleType
 from typing import Final, List, Optional, Type
 
-from pyzeta.framework.ioc.container_provider import ContainerProvider
+from pyzeta.framework.ioc.container import Container
 from pyzeta.framework.plugins.pyzeta_plugin import PyZetaPlugin, tPluggable
 from pyzeta.framework.pyzeta_logging.loggable import Loggable
 
@@ -47,11 +47,13 @@ class PluginLoader(Loggable):
 
     @staticmethod
     def loadPlugins(
+        container: Container,
         path: str = PLUGIN_INSTALL_DIR,
     ) -> List[PyZetaPlugin[tPluggable]]:
         """
         Load plugins present in `path`.
 
+        :param container: Container to load the discovered plugins into
         :param path: Path to search for plugins, defaults to PLUGIN_INSTALL_DIR
         :return: List of loaded plugins.
         """
@@ -59,7 +61,7 @@ class PluginLoader(Loggable):
         plugins: List[PyZetaPlugin[tPluggable]] = []
         for plugin in instance.locateAndLoadPlugins(path):
             pluginInstance = plugin.getInstance()
-            ContainerProvider.getContainer().registerAsTransient(
+            container.registerAsTransient(
                 pluginInstance.pluginType, plugin.initialize()
             )
             plugins.append(pluginInstance)
@@ -83,7 +85,7 @@ class PluginLoader(Loggable):
                 continue
             self.logger.info("module %s might contain a plugin...", candidate)
             module = import_module(
-                candidate, package="pyzeta..framework.plugins.custom_plugins"
+                candidate, package="pyzeta.framework.plugins.custom_plugins"
             )
             plugin = self.loadPlugin(module)
             if plugin is not None:

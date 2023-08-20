@@ -11,12 +11,14 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import Callable, Generic, Tuple, Type, TypeVar, Union
 
+from pyzeta.core.symmetries.symmetry_group import SymmetryGroup
 from pyzeta.framework.settings.settings_service import SettingsService
 from pyzeta.view.cli.parser_facade import PyZetaParserInterface
 
 tPluggable = Union[
     SettingsService,
     PyZetaParserInterface,
+    SymmetryGroup,
 ]
 T_co = TypeVar("T_co", bound=tPluggable, covariant=True)
 

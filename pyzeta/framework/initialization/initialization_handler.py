@@ -50,6 +50,7 @@ class PyZetaInitializationHandler:
             return
 
         container = Container()
+        ContainerProvider.setContainer(container)
 
         # register anything mode-independent first (i.e. settings for logging)
         if mode in (InitModes.CLI | InitModes.SCRIPT | InitModes.GUI):
@@ -71,10 +72,9 @@ class PyZetaInitializationHandler:
         # plugins cannot be loaded in cli mode (plugins might be broken, ...)!
         if mode not in InitModes.CLI:
             PyZetaInitializationHandler._logger.info("loading plugins...")
-            PluginLoader.loadPlugins()
+            PluginLoader.loadPlugins(container)
 
         # initialization complete!
-        ContainerProvider.setContainer(container)
         PyZetaInitializationHandler.initialized = True
         PyZetaInitializationHandler._logger.info("initialization complete!")
 

@@ -134,7 +134,13 @@ class CLIController(CLIControllerFacade):
         :param service: Setting service to update
         """
         oldVerbosity = service.verbose
-        newVerbosity: bool = verbose.lower() == "true"
+        newVerbosity: Optional[bool] = None
+        for verbosity in ["true", "false"]:
+            if verbose.lower() == verbosity:
+                newVerbosity = verbosity == "true"
+                break
+        if newVerbosity is None:
+            raise SystemExit(2)
         if newVerbosity != oldVerbosity:
             service.verbose = newVerbosity
             print(
