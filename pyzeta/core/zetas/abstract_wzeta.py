@@ -45,13 +45,15 @@ class AbstractWeightedZeta(AbstractZeta):
         :param s: array of complex points to evaluate the zeta function on
         :param nMax: maximal summation order to use in the cycle expansion
         :param dMax: maximal number of `s`-derivatives to calculate
-        :return: array of shape `(len(s), nMax, dMax+1, 2, shape(weights))`
+        :return: array of shape `(len(s), nMax+1, dMax+1, 2, shape(weights))`
         """
         self.logger.info(
             "computing dArr at %s using wordLen < %d", str(s), nMax
         )
         afArr = self.calcWeightedA(s, nMax, dMax)
-        dfArr = np.zeros_like(afArr, dtype=np.complex128)
+        aShape = afArr.shape
+        dShape = (aShape[0], aShape[1] + 1, *aShape[2:])
+        dfArr = np.zeros(dShape, dtype=np.complex128)
 
         # initialize induction basis
         dfArr[:, 0, :, :, ...] = 0

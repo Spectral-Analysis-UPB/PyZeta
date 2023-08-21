@@ -161,8 +161,8 @@ class MoebiusMapSystem(HyperbolicMapSystem):
         # order the fixed points as (repelling, attracting) by selecting...
         mask = np.array(
             [
-                self._inInterval(firstLetter, secondFixPt)
-                for firstLetter, secondFixPt in zip(words[:, 0], fixPts[1])
+                not self._inInterval(lastLetter, secondFixPt)
+                for lastLetter, secondFixPt in zip(words[:, -1], fixPts[1])
             ],
             dtype=np.bool_,
         )
@@ -180,5 +180,6 @@ class MoebiusMapSystem(HyperbolicMapSystem):
         :param letter: symbolic letter fixing the interval
         :param fixPoint: point whose interval membership is checked
         """
+        # TODO: test this thorougly!
         intervals = self.fundamentalIntervals
         return intervals[letter][0] <= point <= intervals[letter][1]

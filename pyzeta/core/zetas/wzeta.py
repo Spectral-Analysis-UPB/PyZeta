@@ -174,18 +174,17 @@ class WeightedZeta(AbstractWeightedZeta):
         s = s.reshape(-1, 1, 1, 1)
         for n in range(1, nMax + 1):
             stab1, stab2 = self._stabilityArrs[n - 1]
-            stab1, stab2 = stab1.reshape(1, -1, 1, 1), stab2.reshape(
-                1, -1, 1, 1
-            )
+            stab1 = stab1.reshape(1, -1, 1, 1)
+            stab2 = stab2.reshape(1, -1, 1, 1)
 
             integrals = self._integralArrs[n - 1].reshape(
-                1, -1, integralShape[0], integralShape[1]
+                1, -1, *integralShape
             )
 
             for d in range(dMax + 1):
                 tmp = (
                     np.power(np.log(stab1), d)
-                    * np.power(stab1, s + 1.0, dtype=complex)
+                    * np.power(stab1, s, dtype=complex)
                     / ((1 - stab1) * (stab2 - 1))
                 )
                 afArr[:, n - 1, d, 0, :, :] = np.sum(tmp, axis=1)

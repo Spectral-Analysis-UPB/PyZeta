@@ -79,19 +79,28 @@ class FundamentalDomainIntegrals(IntegralProvider):
                 for translation, rotation in zip(translations, rotations)
             ]
         )
+        # extract and reshape symmetry entries for proper casting below
+        symA, symB = symmetries[:, 0, 0], symmetries[:, 0, 1]
+        symC, symD = symmetries[:, 1, 0], symmetries[:, 1, 1]
+        generatorShape = tuple([-1] + [1] * len(self.domain.shape))
+        symA = symA.reshape(*generatorShape)
+        symB = symB.reshape(*generatorShape)
+        symC = symC.reshape(*generatorShape)
+        symD = symD.reshape(*generatorShape)
 
         # use domain in the shape (words.shape[0], domain.shape)
         domain = self.domain.reshape(1, *self.domain.shape)
         for i in range(words.shape[1]):
             # iterate the domain (support points) along the orbit
             generators = self._mapSystem.getGenerators(words[:, i])
-            domain = (generators[:, 0, 0] * domain + generators[:, 0, 1]) / (
-                generators[:, 1, 0] * domain + generators[:, 1, 1]
-            )
+            a, b = generators[:, 0, 0], generators[:, 0, 1]
+            c, d = generators[:, 1, 0], generators[:, 1, 1]
+            a, b = a.reshape(*generatorShape), b.reshape(*generatorShape)
+            c, d = c.reshape(*generatorShape), d.reshape(*generatorShape)
+            domain = (a * domain + b) / (c * domain + d)
+
             # Rotate domain onto standard vertical geodesic:
-            movedDomain = (
-                symmetries[:, 0, 0] * domain + symmetries[:, 0, 1]
-            ) / (symmetries[:, 1, 0] * domain + symmetries[:, 1, 1])
+            movedDomain = (symA * domain + symB) / (symC * domain + symD)
             assert np.all(
                 movedDomain.imag != 0
             ), "moved domain outside upper halfplane"
