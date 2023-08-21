@@ -7,7 +7,6 @@ Authors:\n
 """
 
 import numpy as np
-import pytest as pt
 
 from pyzeta.core.dynamics.function_systems.implementations import (
     FunnelTorus,

@@ -11,8 +11,6 @@ from numpy import float64
 from numpy.typing import NDArray
 from typing_extensions import TypeAlias
 
-from pyzeta.core.pyzeta_types.general import tVec
-
 
 class PoincareIntegralsArgs(TypedDict, total=True):
     "Init arguments for integrals over Poincare sections."

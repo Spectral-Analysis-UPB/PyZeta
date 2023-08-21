@@ -84,8 +84,6 @@ class WeightedZeta(AbstractWeightedZeta):
         self._stabilityArrs: List[Tuple[tVec, tVec]] = []
         self._integralArrs: List[tIntegralVec] = []
 
-        return
-
     def _initMapSystemData(self, nMax: int, initIntegrals: bool) -> None:
         """
         Initialize symbolic words and associated stabilities as well as orbit
