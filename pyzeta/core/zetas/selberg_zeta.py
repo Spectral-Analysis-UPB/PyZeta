@@ -12,11 +12,15 @@ import numpy as np
 from pyzeta.core.dynamics.function_systems.function_system import (
     FunctionSystem,
 )
-from pyzeta.core.dynamics.symbolic_dynamics.symbolic_dynamics import (
-    SymbolicDynamics,
+from pyzeta.core.dynamics.symbolic_dynamics.abstract_dynamics import (
+    AbstractSymbolicDynamics,
 )
+from pyzeta.core.pyzeta_types.function_systems import FunctionSystemType
 from pyzeta.core.pyzeta_types.general import tMat, tVec, tWordVec
+from pyzeta.core.pyzeta_types.symbolics import SymbolicDynamicsType
+from pyzeta.core.pyzeta_types.system_arguments import tFunctionSystemInitArgs
 from pyzeta.core.zetas.abstract_zeta import AbstractZeta
+from pyzeta.framework.ioc.container_provider import ContainerProvider
 
 
 class SelbergZeta(AbstractZeta):
@@ -30,7 +34,12 @@ class SelbergZeta(AbstractZeta):
         "_stabilityArrs",
     )
 
-    def __init__(self, functionSystem: FunctionSystem) -> None:
+    def __init__(
+        self,
+        *,
+        functionSystem: FunctionSystemType,
+        systemInitArgs: tFunctionSystemInitArgs,
+    ) -> None:
         """
         TODO.
         """
@@ -38,10 +47,15 @@ class SelbergZeta(AbstractZeta):
             "creating %s for %s", self.__class__.__name__, str(functionSystem)
         )
 
-        # TODO: resolve function system from container!
-        self._system = functionSystem
-        # TODO: resolve symbolic dynamic from container!
-        self._symbDyn = SymbolicDynamics(self._system.adjacencyMatrix)
+        container = ContainerProvider.getContainer()
+        self._system = container.tryResolve(
+            FunctionSystem, systemType=functionSystem, initArgs=systemInitArgs
+        )
+        self._symbDyn = container.tryResolve(
+            AbstractSymbolicDynamics,
+            symbolicsType=SymbolicDynamicsType.NON_REDUCED,
+            adjacencyMatrix=self._system.adjacencyMatrix,
+        )
 
         self._initStatus: int = 0
         self._wordArrs: List[tWordVec] = []
@@ -60,10 +74,13 @@ class SelbergZeta(AbstractZeta):
         :param nMax: maximal word length for initialization of dynamical data
         """
         if self._initStatus >= nMax:
-            self.logger.warning("trying to re-initialize data in zeta!")
+            self.logger.info("trying to re-initialize data in zeta!")
             return
         self.logger.debug("initializing data within zeta function!")
 
+        # TODO: re-use previously calculated data by skipping words!
+        self._wordArrs = []
+        self._stabilityArrs = []
         for words, _ in self._symbDyn.wordGenerator(
             maxWordLength=nMax, cyclRed=True
         ):
@@ -74,7 +91,7 @@ class SelbergZeta(AbstractZeta):
     # docstr-coverage: inherited
     def calcA(self, s: tVec, nMax: int) -> tMat:
         self.logger.info(
-            "starting Bell polýnomial construction on %d-vector", s.shape[0]
+            "starting Bell polynomial construction on %d-vector", s.shape[0]
         )
 
         sSize = s.shape[0]

@@ -14,3 +14,4 @@ Additional Resources
    :maxdepth: 1
 
    aop_example
+   geometry_example
