@@ -8,6 +8,7 @@ Authors:\n
 from os.path import abspath
 from typing import Optional
 
+from pyzeta.framework.ioc.container_provider import ContainerProvider
 from pyzeta.framework.plugins.installation_helper import InstallationHelper
 from pyzeta.framework.plugins.plugin_loader import PluginLoader
 from pyzeta.framework.pyzeta_logging.log_levels import LogLevel
@@ -56,7 +57,8 @@ class CLIController(CLIControllerFacade):
         if args.listPlugins:
             print("currently installed Plugins:")
             print("----------------------------")
-            for plugin in PluginLoader.loadPlugins():
+            container = ContainerProvider.getContainer()
+            for plugin in PluginLoader.loadPlugins(container):
                 print(plugin)
 
         if args.listModules:
