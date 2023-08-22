@@ -27,6 +27,7 @@ How to Contribute
    :maxdepth: 1
    :caption: Contents of PyZeta's Documentation:
 
+   teaser
    misc/getting_started
    user_guide/user_guide
    theory/theory

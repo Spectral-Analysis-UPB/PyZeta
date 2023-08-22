@@ -15,3 +15,4 @@ class InitModes(Flag):
     CLI = auto()
     SCRIPT = auto()
     GUI = auto()
+    TEST = auto()
