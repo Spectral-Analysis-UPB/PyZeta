@@ -55,7 +55,7 @@ class TrivialGroup(SymmetryGroup):
     ) -> TrivialGroup:
         "Override `__new__` to implement singleton behaviour."
         if cls._instance is None:
-            cls._instance = super().__new__(cls, *args, **kwargs)
+            cls._instance = super().__new__(cls)
         return cls._instance
 
     def __init__(self) -> None:

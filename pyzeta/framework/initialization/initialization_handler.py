@@ -30,10 +30,17 @@ from pyzeta.core.zetas.abstract_zeta import AbstractZeta
 from pyzeta.framework.initialization.init_modes import InitModes
 from pyzeta.framework.ioc.container import Container
 from pyzeta.framework.ioc.container_provider import ContainerProvider
+from pyzeta.framework.plugins.plugin_loader import PluginLoader
 from pyzeta.framework.pyzeta_logging.log_manager import LogManager
 from pyzeta.framework.pyzeta_logging.logger_facade import PyZetaLogger
 from pyzeta.framework.settings.settings_factory import SettingsServiceFactory
 from pyzeta.framework.settings.settings_service import SettingsService
+from pyzeta.view.cli.cli_controller import CLIController
+from pyzeta.view.cli.cli_parser import PyZetaParser
+from pyzeta.view.cli.controller_facade import CLIControllerFacade
+from pyzeta.view.cli.install_test_facade import InstallTestingHandlerFacade
+from pyzeta.view.cli.install_test_handler import InstallTestingHandler
+from pyzeta.view.cli.parser_facade import PyZetaParserInterface
 
 
 class PyZetaInitializationHandler:
@@ -62,6 +69,7 @@ class PyZetaInitializationHandler:
             return
 
         container = Container()
+        ContainerProvider.setContainer(container)
 
         # register anything mode-independent first (i.e. settings for logging)
         if mode in (
@@ -84,8 +92,12 @@ class PyZetaInitializationHandler:
         elif mode == InitModes.TEST:
             PyZetaInitializationHandler.initTESTServices(container)
 
+        # plugins cannot be loaded in cli mode (plugins might be broken, ...)!
+        if mode not in InitModes.CLI:
+            PyZetaInitializationHandler._logger.info("loading plugins...")
+            PluginLoader.loadPlugins(container)
+
         # initialization complete!
-        ContainerProvider.setContainer(container)
         PyZetaInitializationHandler.initialized = True
         PyZetaInitializationHandler._logger.info("initialization complete!")
 
@@ -107,6 +119,11 @@ class PyZetaInitializationHandler:
 
         :param container: container to register cli services with
         """
+        container.registerAsSingleton(PyZetaParserInterface, PyZetaParser())
+        container.registerAsTransient(CLIControllerFacade, CLIController)
+        container.registerAsTransient(
+            InstallTestingHandlerFacade, InstallTestingHandler
+        )
 
     @staticmethod
     def initSCRIPTServices(container: Container) -> None:
