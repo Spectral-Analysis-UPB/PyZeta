@@ -21,12 +21,15 @@ from matplotlib import patches
 
 from pyzeta.geometry.constants import tScal
 from pyzeta.geometry.geometry_exceptions import (
-    InvalidDiskPoint,
     InvalidGeodesicException,
-    InvalidHalfplanePoint,
     InvalidModelException,
 )
-from pyzeta.geometry.helpers import DtoH, HtoD, stabilize
+from pyzeta.geometry.helpers import (
+    HtoD,
+    checkConsistencyAndConvert,
+    stabilize,
+    styleHyperbolicPlanePlot,
+)
 
 
 class Geodesic:
@@ -59,24 +62,10 @@ class Geodesic:
         """
         if z1 == z2:
             raise InvalidGeodesicException(z1, z2)
-        if model == "D":
-            z1 = stabilize(z1, model=model)  # improve numerical stability
-            z2 = stabilize(z2, model=model)  # improve numerical stability
-            if abs(z1) > 1:
-                raise InvalidDiskPoint(z1)
-            if abs(z2) > 1:
-                raise InvalidDiskPoint(z2)
-            z1 = DtoH(z1)
-            z2 = DtoH(z2)
-        elif model == "H":
-            z1 = stabilize(z1, model=model)  # improve numerical stability
-            z2 = stabilize(z2, model=model)  # improve numerical stability
-            if z1.imag < 0:
-                raise InvalidHalfplanePoint(z1)
-            if z2.imag < 0:
-                raise InvalidHalfplanePoint(z2)
-        else:
-            raise InvalidModelException(model)
+
+        z1 = stabilize(z1, model=model)  # improve numerical stability
+        z2 = stabilize(z2, model=model)  # improve numerical stability
+        z1, z2 = checkConsistencyAndConvert(z1, z2, model=model.upper())
 
         self._model = model
 
@@ -99,14 +88,13 @@ class Geodesic:
                 self.r = np.sqrt((x1 - self.m) ** 2 + y1**2)
                 self.t = self.m - self.r
                 self.u = self.m + self.r
-        self.td = HtoD(self.t)
-        self.ud = HtoD(self.u)
-        phiU = np.angle(self.ud)
-        phiT = np.angle(self.td)
+
+        self.td, self.ud = HtoD(self.t), HtoD(self.u)
+        phiU, phiT = np.angle(self.ud), np.angle(self.td)
         phiInt = abs(phiT - phiU)
+
         if abs(phiInt - np.pi) < 1e-4:
-            self.md = np.infty
-            self.rd = np.infty
+            self.md, self.rd = np.infty, np.infty
         else:
             phiMean = (phiT + phiU) / 2.0
             if abs(phiMean - phiT) > np.pi / 2.0:
@@ -166,8 +154,6 @@ class Geodesic:
         :return: Matplotlib figure and matplotlib axes object in which the plot
             is drawn
         """
-        model = self.model
-
         # place keyword arguments specifing markers into separate dictionary
         markerKwargs = {}
         for key, item in kwargs.items():
@@ -184,51 +170,26 @@ class Geodesic:
         markerKwargs["clip_on"] = kwargs.get("clip_on", False)
 
         # set maximal imag part on 'H' depending on default and circle size
-        if self.r != np.infty:
-            inftyMax = 1.2 * self.r
+        inftyMax = 1.2 * self.r if self.r != np.infty else inftyMax
         # set center of real part on 'H' depending on circle position
-        if self.r == np.infty:
-            center = self.t
-        else:
-            center = self.m
+        center = self.t if self.r == np.infty else self.m
 
         if ax is None:
             _, ax = plt.subplots(tight_layout=True)
         else:
             upper = max(ax.get_xlim()[1], center + inftyMax)
             lower = min(ax.get_xlim()[0], center - inftyMax)
-            center = (upper + lower) / 2.0
-            inftyMax = (upper - lower) / 2.0
+            center, inftyMax = (upper + lower) / 2.0, (upper - lower) / 2.0
         ax.set_aspect(aspect="equal")
 
-        if model == "H":
-            ax.set_xlim(center - inftyMax, center + inftyMax)
-            ax.set_ylim(0, inftyMax)
-            ax.text(
-                1,
-                1,
-                r"$\mathbb{H}$",
-                horizontalalignment="right",
-                verticalalignment="top",
-                transform=ax.transAxes,
-                fontsize="xx-large",
-            )
-        else:
-            ax.set_xlim(-1.01, 1.01)
-            ax.set_ylim(-1.01, 1.01)
-            ax.text(
-                1,
-                1,
-                r"$\mathbb{D}$",
-                horizontalalignment="right",
-                verticalalignment="top",
-                transform=ax.transAxes,
-                fontsize="xx-large",
-            )
-        ax.set_xlabel(r"$\Re(z)$")
-        ax.set_ylabel(r"$\Im(z)$")
+        styleHyperbolicPlanePlot(
+            self.model,
+            ax,
+            (center - inftyMax, center + inftyMax),
+            (0, inftyMax),
+        )
 
-        if model == "H":
+        if self.model == "H":
             if self.r == np.infty:
                 ax.plot(
                     [self.t.real, self.u.real],
@@ -263,50 +224,49 @@ class Geodesic:
                     **kwargs,
                 )
                 ax.add_patch(arc)
+
+            return ax.get_figure(), ax
+
+        circle = patches.Arc((0, 0), 2, 2, lw=0.5)
+        ax.add_patch(circle)
+
+        phiInt = abs(np.angle(self.ud, deg=True) - np.angle(self.td, deg=True))
+        if isclose(phiInt, 180.0, abs_tol=1e-4):
+            ax.plot(
+                [self.td.real, self.ud.real],
+                [self.td.imag, self.ud.imag],
+                ls="",
+                color=kwargs["color"],
+                **markerKwargs,
+            )
+            ax.plot(
+                [self.td.real, self.ud.real],
+                [self.td.imag, self.ud.imag],
+                **kwargs,
+            )
         else:
-            circle = patches.Arc((0, 0), 2, 2, lw=0.5)
-            ax.add_patch(circle)
+            phiMean = np.angle(self.md, deg=True)
+            theta2 = abs(180 - phiInt) / 2.0
+            theta1 = -theta2
+            offset = phiMean + 180
 
-            phiU = np.angle(self.ud, deg=True)
-            phiT = np.angle(self.td, deg=True)
-            phiInt = abs(phiT - phiU)
-
-            if isclose(phiInt, 180.0, abs_tol=1e-4):
-                ax.plot(
-                    [self.td.real, self.ud.real],
-                    [self.td.imag, self.ud.imag],
-                    ls="",
-                    color=kwargs["color"],
-                    **markerKwargs,
-                )
-                ax.plot(
-                    [self.td.real, self.ud.real],
-                    [self.td.imag, self.ud.imag],
-                    **kwargs,
-                )
-            else:
-                phiMean = np.angle(self.md, deg=True)
-                theta2 = abs(180 - phiInt) / 2.0
-                theta1 = -theta2
-                offset = phiMean + 180
-
-                ax.plot(
-                    [self.td.real, self.ud.real],
-                    [self.td.imag, self.ud.imag],
-                    ls="",
-                    color=kwargs["color"],
-                    **markerKwargs,
-                )
-                arc = patches.Arc(
-                    (self.md.real, self.md.imag),
-                    2 * self.rd,
-                    2 * self.rd,
-                    theta1=theta1,
-                    theta2=theta2,
-                    angle=offset,
-                    **kwargs,
-                )
-                ax.add_patch(arc)
+            ax.plot(
+                [self.td.real, self.ud.real],
+                [self.td.imag, self.ud.imag],
+                ls="",
+                color=kwargs["color"],
+                **markerKwargs,
+            )
+            arc = patches.Arc(
+                (self.md.real, self.md.imag),
+                2 * self.rd,
+                2 * self.rd,
+                theta1=theta1,
+                theta2=theta2,
+                angle=offset,
+                **kwargs,
+            )
+            ax.add_patch(arc)
 
         return ax.get_figure(), ax
 
@@ -388,7 +348,8 @@ class Geodesic:
                 + "geodesics going to infty not "
                 + "implemented"
             )
-        elif abs(a1 - a2 + b2 - b1) < 1e-9:
+
+        if abs(a1 - a2 + b2 - b1) < 1e-9:
             c1 = np.infty
             c2 = 0.5 * (a1 + b2)
         else:
@@ -421,6 +382,5 @@ class Geodesic:
                 - a1 * b2
                 + a2 * b1
             ) / (a1 - a2 + b2 - b1)
-        geo = Geodesic(c1, c2)
 
-        return geo
+        return Geodesic(c1, c2)

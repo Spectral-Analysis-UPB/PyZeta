@@ -86,14 +86,17 @@ class SU11:
         """
         return f"SU11({self._A.round(3)})"
 
+    # docstr-coverage: inherited
     @overload
     def __call__(self, z: Geodesic) -> Geodesic:
         ...
 
+    # docstr-coverage: inherited
     @overload
     def __call__(self, z: tScal) -> tScal:
         ...
 
+    # docstr-coverage: inherited
     @overload
     def __call__(self, z: tVec) -> tVec:
         ...
@@ -203,15 +206,10 @@ class SU11:
         [[a, b], [c, d]] = self._A
         if a * d - b * c < 0:
             raise NotImplementedError(
-                "Fixed point comptutation for "
-                + "orientation-reversing trafo "
-                + "not implemented"
+                "Fixed points not implemented for orientation-reversing trafo"
             )
         if [[a, b], [c, d]] == [[1, 0], [0, 1]]:
-            raise ValueError(
-                "Trying to calculate fixed points of the "
-                + "identity transformation"
-            )
+            raise ValueError("Trying to calculate fixed points of identity!")
 
         if c == 0:
             self.fixPt = (0.0,)

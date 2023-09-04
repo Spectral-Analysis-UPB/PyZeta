@@ -14,6 +14,7 @@ class InvalidModelException(Exception):
     """
 
     def __str__(self) -> str:
+        "String representation of the exception."
         return f"InvalidModelException({self.args[0]})"
 
 
@@ -24,6 +25,7 @@ class InvalidDiskPoint(Exception):
     """
 
     def __str__(self) -> str:
+        "String representation of the exception."
         return f"InvalidDiskPoint({self.args[0]})"
 
 
@@ -34,6 +36,7 @@ class InvalidHalfplanePoint(Exception):
     """
 
     def __str__(self) -> str:
+        "String representation of the exception."
         return f"InvalidHalfplanePoint({self.args[0]})"
 
 
@@ -54,6 +57,7 @@ class InvalidGeodesicException(Exception):
         super().__init__((val1, val2))
 
     def __str__(self) -> str:
+        "String representation of the exception."
         return f"Cannot create unique geodesic from {self.args[0]}"
 
 
@@ -64,4 +68,5 @@ class InvalidMatrixException(Exception):
     """
 
     def __str__(self) -> str:
+        "String representation of the exception."
         return f"InvalidSymmetryException({self.args[0]})"

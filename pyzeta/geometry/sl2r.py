@@ -83,14 +83,17 @@ class SL2R:
         """
         return f"SL2R({self._A.round(3)})"
 
+    # docstr-coverage: inherited
     @overload
     def __call__(self, z: Geodesic) -> Geodesic:
         ...
 
+    # docstr-coverage: inherited
     @overload
     def __call__(self, z: tScal) -> tScal:
         ...
 
+    # docstr-coverage: inherited
     @overload
     def __call__(self, z: tVec) -> tVec:
         ...
@@ -211,42 +214,41 @@ class SL2R:
             determinant.
         :return: Fixed point(s)
         """
-        if self.fixPt is None:
-            [[a, b], [c, d]] = self._A
-            if a * d - b * c < 0:
-                raise NotImplementedError(
-                    "Fixed point comptutation for "
-                    + "orientation-reversing trafo "
-                    + "not implemented"
-                )
-            elif [[a, b], [c, d]] == [[1, 0], [0, 1]]:
-                raise ValueError(
-                    "Trying to calculate fixed points of the "
-                    + "identity transformation"
-                )
-            elif c == 0:
-                if not isclose(d, a):
-                    self.fixPt = (b / (d - a), np.infty)
-                else:
-                    self.fixPt = (np.infty,)
+        if self.fixPt is not None:
+            return self.fixPt
+
+        [[a, b], [c, d]] = self._A
+        if a * d - b * c < 0:
+            raise NotImplementedError(
+                "Fixed points not implemented for orientation-reversing trafo"
+            )
+        if [[a, b], [c, d]] == [[1, 0], [0, 1]]:
+            raise ValueError("Trying to calculate fixed points of identity!")
+
+        if c == 0:
+            if not isclose(d, a):
+                self.fixPt = (b / (d - a), np.infty)
             else:
-                # distinguish parabolic, elliptic, hyperbolic using trace
-                trace = abs(a + d)
-                # parabolic case:
-                if isclose(trace, 2.0):
-                    x12 = (a - d) / (2.0 * c)
-                    self.fixPt = (x12,)
-                # hyperbolic case:
-                elif trace > 2:
-                    x1 = (a - d - np.sqrt(trace**2 - 4)) / (2.0 * c)
-                    x2 = (a - d + np.sqrt(trace**2 - 4)) / (2.0 * c)
-                    self.fixPt = (x1, x2)
-                # elliptic case:
-                else:
-                    x12 = (a - d) / (2.0 * c) + np.sqrt(
-                        4 - trace**2
-                    ) * 1j / (2.0 * abs(c))
-                    self.fixPt = (x12,)
+                self.fixPt = (np.infty,)
+            return self.fixPt
+
+        # distinguish parabolic, elliptic, hyperbolic using trace
+        trace = abs(a + d)
+        # parabolic case:
+        if isclose(trace, 2.0):
+            x12 = (a - d) / (2.0 * c)
+            self.fixPt = (x12,)
+        # hyperbolic case:
+        elif trace > 2:
+            x1 = (a - d - np.sqrt(trace**2 - 4)) / (2.0 * c)
+            x2 = (a - d + np.sqrt(trace**2 - 4)) / (2.0 * c)
+            self.fixPt = (x1, x2)
+        # elliptic case:
+        else:
+            x12 = (a - d) / (2.0 * c) + np.sqrt(4 - trace**2) * 1j / (
+                2.0 * abs(c)
+            )
+            self.fixPt = (x12,)
 
         return self.fixPt
 

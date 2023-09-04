@@ -24,7 +24,7 @@ from pyzeta.framework.ioc.container_provider import ContainerProvider
 
 # initialize SettingsService
 PyZetaInitializationHandler.initPyZetaServices(mode=InitModes.TEST)
-container = ContainerProvider.getContainer()
+CONTAINER = ContainerProvider.getContainer()
 
 
 def testFunneledTorus() -> None:
@@ -36,7 +36,7 @@ def testFunneledTorus() -> None:
     ]:
         cylinder = FunnelTorus(**params, rotate=False)
         rotatedCylinder = FunnelTorus(**params, rotate=True)
-        for words, _ in container.tryResolve(
+        for words, _ in CONTAINER.tryResolve(
             AbstractSymbolicDynamics,
             symbolicsType=SymbolicDynamicsType.NON_REDUCED,
             adjacencyMatrix=cylinder.adjacencyMatrix,
@@ -57,7 +57,7 @@ def testGeometricFunneledTorus() -> None:
     ]:
         cylinder = GeometricFunnelTorus(**params, rotate=False)
         rotatedCylinder = GeometricFunnelTorus(**params, rotate=True)
-        for words, _ in container.tryResolve(
+        for words, _ in CONTAINER.tryResolve(
             AbstractSymbolicDynamics,
             symbolicsType=SymbolicDynamicsType.NON_REDUCED,
             adjacencyMatrix=cylinder.adjacencyMatrix,
