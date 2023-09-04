@@ -16,13 +16,15 @@ from pyzeta.core.pyzeta_types.system_arguments import (
     HyperbolicCylinderArgs,
 )
 from pyzeta.core.zetas.selberg_zeta import SelbergZeta
-from pyzeta.framework.initialization.init_modes import InitModes
 from pyzeta.framework.initialization.initialization_handler import (
     PyZetaInitializationHandler,
 )
+from pyzeta.framework.ioc.container_provider import ContainerProvider
 
 # initialize SettingsService
-PyZetaInitializationHandler.initPyZetaServices(mode=InitModes.TEST)
+PyZetaInitializationHandler.initSCRIPTServices(
+    ContainerProvider.getContainer()
+)
 
 
 def testCylinderResonances() -> None:
