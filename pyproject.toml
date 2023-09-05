@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "PyZeta"
-version = "0.1.0"
+version = "0.1.1"
 authors = [
     {name = "Philipp Schuette", email = "pschuet2@mail.uni-paderborn.de"}
 ]
@@ -85,7 +85,7 @@ markers = [
 ]
 
 [tool.coverage.run]
-omit = ["pyzeta/tests/*/*.py"]
+omit = ["pyzeta/tests/*", "pyzeta/framework/plugins/custom_plugins/*"]
 
 [tool.mypy]
 python_version = "3.9"
@@ -104,8 +104,11 @@ disable_error_code = ["type-abstract", "no-untyped-call", ]
 format = "pylint"
 linters = "mccabe,pyflakes,pycodestyle"
 
+[tool.pylama.linter.mccabe]
+max-complexity = 12
+
 [tool.pylama.linter.pycodestyle]
-max-complexity = 11
+max-complexity = 12
 ignore = "E203,W503"
 count = true
 
@@ -134,7 +137,8 @@ good-names = [
     "i", "j", "k", "n", "s", "x", "y", "z", "x0", "x1", "x2", "y0", "y1", "y2",
     "z0", "z1", "z2", "aZ", "bZ", "cZ", "dZ", "a", "a1", "a2", "b", "b1", "b2",
     "c", "c1", "c2", "d", "d0", "r", "t", "u", "v", "m", "ud", "md", "td", "f",
-    "df", "p", "ex", "_"
+    "SUtoSL", "SLtoSU", "g", "xx", "yy", "cT", "xi", "rd", "df", "p", "ex",
+    "ax", "h", "fixPts_", "A", "HtoD", "DtoH", "_"
 ]
 good-names-rgxs = ["_.", "Time*", "t."]
 inlinevar-naming-style = "any"
@@ -155,7 +159,7 @@ valid-metaclass-classmethod-first-arg = ["cls"]
 [tool.pylint.design]
 # exclude-too-few-public-methods = ["ToggleCollection"]
 max-args = 8
-max-attributes = 8
+max-attributes = 9
 max-bool-expr = 5
 max-branches = 12
 max-locals = 18

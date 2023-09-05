@@ -39,9 +39,16 @@ class ProfilingAdvice(Advice[T, P]):
         self._statsFile = statsFile
 
     def _start(self, *_: P.args, **__: P.kwargs) -> None:
+        "Start the wrapped cprofile. Input args and kwargs are ignored."
         self._profile.enable()
 
     def _stop(self, result: T, *_: P.args, **__: P.kwargs) -> T:
+        """
+        Stop the wrapped cprofile. Input args and kwargs are ignored except the
+        first argument which gets passed along unaltered.
+
+        :param result: result of the wrapped method for unaltered passing along
+        """
         self._profile.disable()
         self._profile.dump_stats(self.statsFile + ProfilingAdvice.extension)
 

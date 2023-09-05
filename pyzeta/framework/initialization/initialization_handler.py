@@ -166,6 +166,18 @@ class PyZetaInitializationHandler:
         container.registerAsTransient(
             FunctionSystem, FunctionSystemFactory.getConcreteSystem
         )
+        container.registerAsTransient(
+            HyperbolicMapSystem, MapSystemFactory.getConcreteMapSystem
+        )
+        container.registerAsTransient(
+            IntegralProvider, OrbitIntegralFactory.getConcreteIntegral
+        )
+        container.registerAsTransient(
+            AbstractZeta, ZetaFactory.getConcreteZeta
+        )
+        container.registerAsTransient(
+            AbstractWeightedZeta, ZetaFactory.getConcreteWeightedZeta
+        )
 
     @staticmethod
     def initGUIServices(container: Container) -> None:

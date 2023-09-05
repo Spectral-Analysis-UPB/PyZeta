@@ -19,6 +19,7 @@ class HyperbolicCylinderArgs(TypedDict, total=True):
 class CylinderMapArgs(TypedDict, total=True):
     "Init arguments for a (hyperbolic) cylinder based map system."
     funnelWidth: float
+    rotate: bool
 
 
 class GeometricFunnelTorusArgs(TypedDict, total=True):

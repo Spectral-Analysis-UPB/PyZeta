@@ -47,6 +47,10 @@ class Advice(Generic[T, P]):
         """
 
         def wrappedMethod(*args: P.args, **kwargs: P.kwargs) -> T:
+            """
+            New method that coincides with the old one except for calling of
+            pre and post functions of the advice.
+            """
             if self.preFunc:
                 self.preFunc(*args, **kwargs)
             result = instanceMethod(*args, **kwargs)

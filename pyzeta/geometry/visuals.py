@@ -27,7 +27,7 @@ from pyzeta.geometry.geometry_exceptions import (
     InvalidHalfplanePoint,
     InvalidModelException,
 )
-from pyzeta.geometry.helpers import DtoH, HtoD
+from pyzeta.geometry.helpers import DtoH, HtoD, checkConsistencyAndConvert
 from pyzeta.geometry.sl2r import SL2R
 from pyzeta.geometry.su11 import SU11
 
@@ -223,21 +223,7 @@ def getMiddlePt(z1: tScal, z2: tScal, model: str = "H") -> tScal:
     :raises InvalidModelException: Raised if `model` is neither 'H' nor 'D'.
     :return: Middle point
     """
-    model = model.upper()
-    if model == "D":
-        if abs(z1) > 1:
-            raise InvalidDiskPoint(z1)
-        if abs(z2) > 1:
-            raise InvalidDiskPoint(z2)
-        z1 = DtoH(z1)
-        z2 = DtoH(z2)
-    elif model == "H":
-        if z1.imag < 0:
-            raise InvalidHalfplanePoint(z1)
-        if z2.imag < 0:
-            raise InvalidHalfplanePoint(z2)
-    else:
-        raise InvalidModelException(model)
+    z1, z2 = checkConsistencyAndConvert(z1, z2, model=model.upper())
 
     if z1 == z2:
         res = z1
@@ -297,24 +283,9 @@ def getPerpGeo(z1: tScal, z2: tScal, model: str = "H") -> Geodesic:
         of the segment lies on the boundary.
     :return: Perpendicular bisector
     """
-    model = model.upper()
-    if model == "D":
-        if abs(z1) > 1:
-            raise InvalidDiskPoint(z1)
-        if abs(z2) > 1:
-            raise InvalidDiskPoint(z2)
-        z1 = DtoH(z1)
-        z2 = DtoH(z2)
-    elif model == "H":
-        if z1.imag < 0:
-            raise InvalidHalfplanePoint(z1)
-        if z2.imag < 0:
-            raise InvalidHalfplanePoint(z2)
-    else:
-        raise InvalidModelException(model)
-
     if z1 == z2:
         raise InvalidGeodesicException(z1, z2)
+    z1, z2 = checkConsistencyAndConvert(z1, z2, model=model.upper())
 
     geo = Geodesic(z1, z2, model="H")
     zMid = getMiddlePt(z1, z2, model="H")
@@ -330,13 +301,15 @@ def getPerpGeo(z1: tScal, z2: tScal, model: str = "H") -> Geodesic:
     if z1.imag == z2.imag:
         res = Geodesic(zMid.real, zMid, model="H")
         res.model = model
-    else:
-        trans = SL2R(np.array([[1, (-1 * zMid).real], [0, 1]]))
-        dilat = SL2R(np.array([[zMid.imag ** (-1), 0], [0, 1]]))
-        turn = SL2R(np.array([[1, -1], [1, 1]]))
-        prod = trans.inverse() * dilat.inverse() * turn * dilat * trans
-        res = prod(geo)
-        res.model = model
+        return res
+
+    trans = SL2R(np.array([[1, (-1 * zMid).real], [0, 1]]))
+    dilat = SL2R(np.array([[zMid.imag ** (-1), 0], [0, 1]]))
+    turn = SL2R(np.array([[1, -1], [1, 1]]))
+    prod = trans.inverse() * dilat.inverse() * turn * dilat * trans
+    res = prod(geo)
+    res.model = model
+
     return res
 
 
@@ -450,12 +423,11 @@ def plotFundDom(
     elif isinstance(generators[0], SU11):
         model = "D"
     else:
-        raise TypeError(
-            "Generators must be passed as SL2R objects or as " + "SU11 objects"
-        )
+        raise TypeError("Generators must be passed as SL2R or SU11 objects")
 
     if model == "D" and z0 == 1j:
         z0 = 0
+    z0 = 0 if model == "D" and z0 == 1j else z0
 
     if ax is None:
         _, ax = plt.subplots(tight_layout=True)
@@ -484,13 +456,38 @@ def plotFundDom(
             ax.set_ylim(0, ax.get_ylim()[1] + addLim)
             ax.set_aspect("equal")
 
+    styleFundamentalDomain(
+        generators=generators,
+        z0=z0,
+        model=model,
+        ax=ax,
+        boundaryPts=boundaryPts,
+        transAx=transAx,
+        center=center,
+        **kwargs,
+    )
+    return ax.get_figure(), ax
+
+
+def styleFundamentalDomain(
+    generators: Tuple[tSym, ...],
+    z0: tScal,
+    model: str,
+    ax: Any,
+    boundaryPts: List[Tuple[float, float]],
+    transAx: bool,
+    center: bool,
+    **kwargs: object,
+) -> None:
+    """
+    TODO.
+    """
     # place keyword arguments specifing markers into separate dictionary
     markerKwargs = {}
     for key, item in kwargs.items():
         if "marker" in key:
             markerKwargs[key] = item
-    for key in markerKwargs:
-        kwargs.pop(key)
+            kwargs.pop(key)
 
     kwargs["linestyle"] = kwargs.get("linestyle", kwargs.get("ls", "--"))
     kwargs.pop("ls", None)
@@ -524,26 +521,35 @@ def plotFundDom(
             )
 
     if model == "D":
-        theta1 = np.rad2deg(boundaryPts[-1][1])
-        theta2 = np.rad2deg(boundaryPts[0][0])
-        arc = patches.Arc((0, 0), 2, 2, theta1=theta1, theta2=theta2, **kwargs)
+        arc = patches.Arc(
+            (0, 0),
+            2,
+            2,
+            theta1=np.rad2deg(boundaryPts[-1][1]),
+            theta2=np.rad2deg(boundaryPts[0][0]),
+            **kwargs,
+        )
         ax.add_patch(arc)
 
         for i in range(0, len(boundaryPts) - 1):
-            theta1 = np.rad2deg(boundaryPts[i][1])
-            theta2 = np.rad2deg(boundaryPts[i + 1][0])
             arc = patches.Arc(
-                (0, 0), 2, 2, theta1=theta1, theta2=theta2, **kwargs
+                (0, 0),
+                2,
+                2,
+                theta1=np.rad2deg(boundaryPts[i][1]),
+                theta2=np.rad2deg(boundaryPts[i + 1][0]),
+                **kwargs,
             )
             ax.add_patch(arc)
 
     if transAx:
-        inftyMax = ax.get_ylim()[1]
         for g in generators:
             kwargs["color"] = "tab:gray"
             kwargs["linestyle"] = ":"
             transAxis = g.getTransAx()
-            transAxis.plot(ax=ax, inftyMax=inftyMax, **kwargs, **markerKwargs)
+            transAxis.plot(
+                ax=ax, inftyMax=ax.get_ylim()[1], **kwargs, **markerKwargs
+            )
 
     if center:
         markerKwargs["marker"] = markerKwargs.get("marker", "o")
@@ -551,9 +557,6 @@ def plotFundDom(
         ax.text(z0.real, z0.imag, r"$z_0$")
         for g in generators:
             z1 = g(z0)
-            gInv = g.inverse()
-            z2 = gInv(z0)
+            z2 = (g.inverse())(z0)
             ax.plot(z1.real, z1.imag, color="0.35", **markerKwargs)
             ax.plot(z2.real, z2.imag, color="0.65", **markerKwargs)
-
-    return ax.get_figure(), ax

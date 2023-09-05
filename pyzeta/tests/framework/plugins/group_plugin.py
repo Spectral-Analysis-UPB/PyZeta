@@ -20,6 +20,7 @@ class TestGroup(TrivialGroup):
     "Custom (trivial) symmetry group implementation to supply as a plugin."
 
     def __init__(self, arg1: str, arg2: int) -> None:
+        "Initialize our custom symmetry group implementation."
         super().__init__()
         self.arg1 = arg1
         self.arg2 = arg2
