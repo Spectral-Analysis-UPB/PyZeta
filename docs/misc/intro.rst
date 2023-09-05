@@ -31,4 +31,4 @@ mathematical theory as well as links to the original publications giving precise
 
 -------------------------------
 
-.. [Sch2023] Schuette, Philipp. Invariant Ruelle Distributions on Open Hyperbolic Systems -- An Analytical and Numerical Investigation. PhD Thesis (2023)
+.. [Sch2023] Schuette, Philipp. Invariant Ruelle Distributions for Open Hyperbolic Systems -- An Analytical and Numerical Investigation. PhD Thesis (2023)

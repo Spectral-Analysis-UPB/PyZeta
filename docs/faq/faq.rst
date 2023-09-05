@@ -15,3 +15,4 @@ Additional Resources
 
    aop_example
    geometry_example
+   plugin_example
