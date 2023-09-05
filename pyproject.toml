@@ -85,7 +85,7 @@ markers = [
 ]
 
 [tool.coverage.run]
-omit = ["pyzeta/tests/*/*.py"]
+omit = ["pyzeta/tests/*", "pyzeta/framework/plugins/custom_plugins/*"]
 
 [tool.mypy]
 python_version = "3.9"
